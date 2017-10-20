@@ -1,0 +1,9 @@
+language: java
+jdk:
+  - oraclejdk9
+before_install:
+ - chmod +x gradlew
+
+sudo: required
+
+script: gradle clean build

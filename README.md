@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.com/Sobolee/nashorn-sandbox.svg?token=dSaq7yqE7scX7T7NKb7p&branch=master)](https://travis-ci.com/Sobolee/nashorn-sandbox)

@@ -1,0 +1,35 @@
+group 'nashorn-sandbox'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
+    }
+}
+
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+ext.junitPlatformVersion = '1.0.1'
+ext.junitJupiterVersion  = '5.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.9
+
+dependencies {
+    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+
+    testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
+
+    testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+}
