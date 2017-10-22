@@ -26,10 +26,10 @@ repositories {
 sourceCompatibility = 1.9
 
 dependencies {
-    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
 
     testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
 
-    testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
 }
