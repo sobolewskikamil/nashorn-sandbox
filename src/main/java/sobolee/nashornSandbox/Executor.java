@@ -50,6 +50,7 @@ public class Executor {
         }
         catch(ServerError e){
             System.out.println("Provided Javascript killed the JVM!");
+            process.destroyForcibly();
         }
         catch (IOException e) {
             e.printStackTrace();
