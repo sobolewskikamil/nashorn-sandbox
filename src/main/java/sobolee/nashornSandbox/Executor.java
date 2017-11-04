@@ -1,14 +1,27 @@
 package sobolee.nashornSandbox;
 
 import java.io.*;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.ServerError;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public class Executor {
+    static Registry reg;
+    static int val = 1;
 
     public static void main(String[] args){
         new Executor().run();
     }
 
-    public Object run(){
+    public void run(){
+        try {
+            reg = LocateRegistry.createRegistry(1099);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         String javaHome = System.getProperty("java.home");
         String javaBin = javaHome +
                 File.separator + "bin" +
@@ -20,50 +33,47 @@ public class Executor {
                 javaBin, "-cp", classpath, className);
 
         Process process = null;
-        String response = null;
+        NashornProcessorInterface np = null;
+
+        String killJs = "var fun1 = function(a) {\n" +
+                "\tfun1(a+1);\n" +
+                "    return \"greetings from javascript\";\n" +
+                "};";
+
         try {
             process = builder.start();
-            sendJavascript(process, "print('Hello World!');");
-            response = getResponse(process);
-        } catch (IOException e) {
+            np = getRemoteObject();
+            np.executeJs(killJs);
+            String result = (String) np.invokeFunction("fun1", "10");
+            System.out.println(result);
+            np.close();
+        }
+        catch(ServerError e){
+            System.out.println("Provided Javascript killed the JVM!");
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
+
         try {
             process.waitFor();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(response);
-        return process.exitValue();
+
+        System.out.println("Process returned: "+process.exitValue());
     }
 
-    private void sendJavascript(Process process, String js){
-        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-        try {
-            output.write(js, 0, js.length());
-            output.close();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    private String getResponse(Process process){
-        BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        //BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        String response = null;
-        try {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while((line = input.readLine()) != null){
-                sb.append(line);
+    private NashornProcessorInterface getRemoteObject() throws RemoteException{
+        boolean isBound = false;
+        NashornProcessorInterface np = null;
+        while(!isBound){
+            try {
+                np = (NashornProcessorInterface) reg.lookup("NashornProcessor");
+                isBound = true;
             }
-            response = sb.toString();
-            input.close();
+            catch(NotBoundException e){}
         }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        return response;
+        return np;
     }
 }
