@@ -1,11 +1,13 @@
 package sobolee.nashornSandbox;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.ServerError;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Collections;
 
 public class Executor {
     static Registry reg;
@@ -27,13 +29,13 @@ public class Executor {
                 File.separator + "bin" +
                 File.separator + "java";
         String classpath = System.getProperty("java.class.path");
-        String className = (NashornProcessor.class).getCanonicalName();
+        String className = (NashornExecutorImpl.class).getCanonicalName();
 
         ProcessBuilder builder = new ProcessBuilder(
                 javaBin, "-cp", classpath, className);
 
         Process process = null;
-        NashornProcessorInterface np = null;
+        NashornExecutor np = null;
 
         String killJs = "var fun1 = function(a) {\n" +
                 "\tfun1(a+1);\n" +
@@ -43,9 +45,7 @@ public class Executor {
         try {
             process = builder.start();
             np = getRemoteObject();
-            np.executeJs(killJs);
-            String result = (String) np.invokeFunction("fun1", "10");
-            System.out.println(result);
+            np.executeJs(killJs, Collections.emptyMap());
             np.close();
         }
         catch(ServerError e){
@@ -65,12 +65,12 @@ public class Executor {
         System.out.println("Process returned: "+process.exitValue());
     }
 
-    private NashornProcessorInterface getRemoteObject() throws RemoteException{
+    private NashornExecutor getRemoteObject() throws RemoteException {
         boolean isBound = false;
-        NashornProcessorInterface np = null;
+        NashornExecutor np = null;
         while(!isBound){
             try {
-                np = (NashornProcessorInterface) reg.lookup("NashornProcessor");
+                np = (NashornExecutor) reg.lookup("NashornExecutorImpl");
                 isBound = true;
             }
             catch(NotBoundException e){}
