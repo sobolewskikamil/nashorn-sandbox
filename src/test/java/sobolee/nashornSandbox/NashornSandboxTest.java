@@ -11,7 +11,7 @@ class NashornSandboxTest {
     @Test
     public void shouldProperlyEvaluateJavaScript() {
         // given
-        String script = "return \"test\"";
+        String script = "zmienna = \"test\";";
         Sandbox sandbox = new NashornSandbox.NashornSandboxBuilder().build();
 
         // when
