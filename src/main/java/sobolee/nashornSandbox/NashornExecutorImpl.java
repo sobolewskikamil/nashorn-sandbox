@@ -22,7 +22,7 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     }
 
     @Override
-    public Object executeJs(String script, Map<String, Object> args) throws RemoteException {
+    public Object execute(String script, Map<String, Object> args) throws RemoteException {
         Bindings bindings = new SimpleBindings();
         bindings.putAll(args);
         try {
@@ -30,6 +30,11 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
         } catch (ScriptException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Object invokeFunction(String script, Map<String, Object> args) throws RemoteException {
+        return null;
     }
 
     @Override

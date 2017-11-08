@@ -44,7 +44,7 @@ public class LoadBalancer {
         String id = loadBalance();
         NashornExecutor executor = getExecutor(id);
         try {
-            return executor.executeJs(script, args);
+            return executor.execute(script, args);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

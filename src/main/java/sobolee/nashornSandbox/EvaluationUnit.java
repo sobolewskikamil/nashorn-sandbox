@@ -1,7 +1,6 @@
 package sobolee.nashornSandbox;
 
 public class EvaluationUnit {
-
     private final String id;
     private final Process process;
 

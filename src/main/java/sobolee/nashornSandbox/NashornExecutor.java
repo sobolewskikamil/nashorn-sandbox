@@ -6,7 +6,9 @@ import java.util.Map;
 
 public interface NashornExecutor extends Remote {
 
-    Object executeJs(String script, Map<String, Object> args) throws RemoteException;
+    Object execute(String script, Map<String, Object> args) throws RemoteException;
+
+    Object invokeFunction(String script, Map<String, Object> args) throws RemoteException;
 
     void close() throws RemoteException;
 }

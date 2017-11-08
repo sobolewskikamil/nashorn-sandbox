@@ -17,6 +17,11 @@ public class NashornSandbox implements Sandbox {
         return loadBalancer.evaluate(script, args);
     }
 
+    @Override
+    public Object invokeFunction(String script, Map<String, Object> args) {
+        return null;
+    }
+
     public void allow(final Class<?> aClass) {
         sandboxClassFilter.add(aClass.getName());
     }

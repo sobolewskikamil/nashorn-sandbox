@@ -45,7 +45,7 @@ public class Executor {
         try {
             process = builder.start();
             np = getRemoteObject();
-            np.executeJs(killJs, Collections.emptyMap());
+            np.execute(killJs, Collections.emptyMap());
             np.close();
         }
         catch(ServerError e){
