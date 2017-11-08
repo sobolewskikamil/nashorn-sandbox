@@ -11,4 +11,3 @@ out/
 # Gradle #
 .gradle/
 build/
-/src/main/java/sobolee/nashornSandbox/Executor.java

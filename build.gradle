@@ -10,27 +10,29 @@ buildscript {
     }
 }
 
-apply plugin: 'org.junit.platform.gradle.plugin'
+subprojects {
+    apply plugin: 'org.junit.platform.gradle.plugin'
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'eclipse'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
 
-ext.junitPlatformVersion = '1.0.1'
-ext.junitJupiterVersion  = '5.0.1'
+    ext.junitPlatformVersion = '1.0.1'
+    ext.junitJupiterVersion  = '5.0.1'
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-sourceCompatibility = 1.9
+    sourceCompatibility = 1.9
 
-dependencies {
-    testCompile 'org.assertj:assertj-core:3.8.0'
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    dependencies {
+        testCompile 'org.assertj:assertj-core:3.8.0'
+        testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
 
-    testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
+        testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
 
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+    }
 }

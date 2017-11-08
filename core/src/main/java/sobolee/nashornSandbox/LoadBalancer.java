@@ -54,7 +54,6 @@ public class LoadBalancer {
         try {
             LocateRegistry.createRegistry(1099);
         } catch (RemoteException e) {
-            throw new EnvironmentSetupException("Unable to create registry");
         }
     }
 
