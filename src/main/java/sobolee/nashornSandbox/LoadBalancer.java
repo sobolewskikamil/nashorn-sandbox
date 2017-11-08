@@ -85,7 +85,7 @@ public class LoadBalancer {
         String heapSize = format("-Xmx%sm", memoryPerInstance);
 
         ProcessBuilder builder = new ProcessBuilder(
-                javaBin, heapSize, classpath, className, id);
+                javaBin, heapSize, "-cp", classpath, className, id);
 
         try {
             return builder.start();

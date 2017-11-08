@@ -28,7 +28,7 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
         try {
             return engine.eval(script, bindings);
         } catch (ScriptException e) {
-            throw new RuntimeException(e);
+            throw new RemoteException(e.getMessage());
         }
     }
 
@@ -57,9 +57,11 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
         System.setProperty("java.security.policy", "./nashorn.policy");
 
         try {
+            System.out.print("Binding... ");
             np = new NashornExecutorImpl();
             reg = LocateRegistry.getRegistry(1099);
             reg.rebind(id, np);
+            System.out.println("Success!");
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -67,6 +69,7 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
 
     private static void unbindRegistry(String id) {
         try {
+            System.out.println("Unbinding");
             reg.unbind(id);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
