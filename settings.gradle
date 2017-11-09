@@ -1,4 +1,4 @@
 rootProject.name = 'nashorn-sandbox'
-include 'core'
-include 'app'
-include 'integration-tests'
+include 'nashorn-sandbox-app'
+include 'nashorn-sandbox-core'
+include 'nashorn-sandbox-integration-tests'

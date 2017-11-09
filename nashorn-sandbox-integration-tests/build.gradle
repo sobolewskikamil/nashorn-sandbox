@@ -2,5 +2,5 @@ group 'nashorn-sandbox'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile project(':core')
+    compile project(':nashorn-sandbox-app')
 }

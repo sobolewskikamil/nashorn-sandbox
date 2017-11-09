@@ -1,7 +1,6 @@
 package sobolee.nashornSandbox;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -11,13 +10,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SimpleJavaScriptExecutionTest {
     private static Sandbox sandbox;
 
-    @BeforeAll
+    @BeforeEach
     public static void setUpEnvironment() {
-        sandbox = new NashornSandbox.NashornSandboxBuilder().build();
-    }
-
-    @AfterAll
-    public static void clearEnvironent() {
+        sandbox = new NashornSandbox.NashornSandboxBuilder()
+                .withInactiveTimeout(1)
+                .build();
     }
 
     @Test

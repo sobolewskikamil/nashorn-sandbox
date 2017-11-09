@@ -6,7 +6,7 @@ public interface Sandbox {
 
     Object evaluate(String script, Map<String, Object> args);
 
-    Object invokeFunction(String script, Map<String, Object> args);
+    Object invokeFunction(String function, String script, Map<String, Object> args);
 
     interface SandboxBuilder {
 

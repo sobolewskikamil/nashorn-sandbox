@@ -15,7 +15,6 @@ import java.util.UUID;
 import static java.lang.String.format;
 
 public class LoadBalancer {
-
     private List<EvaluationUnit> evaluationUnits = new ArrayList<>();
     private long memoryPerInstance;
     private int numberOfInstances;
@@ -34,12 +33,6 @@ public class LoadBalancer {
         }
     }
 
-    public void stop() {
-        for (EvaluationUnit evaluationUnit : evaluationUnits) {
-            evaluationUnit.stop();
-        }
-    }
-
     public Object evaluate(String script, Map<String, Object> args) {
         String id = loadBalance();
         NashornExecutor executor = getExecutor(id);
@@ -50,10 +43,20 @@ public class LoadBalancer {
         }
     }
 
+    public Object invokeFunction(String function, String script, Map<String, Object> args) {
+        String id = loadBalance();
+        NashornExecutor executor = getExecutor(id);
+        try {
+            return executor.invokeFunction(function, script, args);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void tryToCreateRegistry() {
         try {
             LocateRegistry.createRegistry(1099);
-        } catch (RemoteException e) {
+        } catch (RemoteException ignored) {
         }
     }
 

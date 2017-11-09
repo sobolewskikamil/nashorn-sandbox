@@ -12,7 +12,9 @@ public class ExceptionTest {
 
     @BeforeEach
     public void setUpEnvironment() {
-        sandbox = new NashornSandbox.NashornSandboxBuilder().build();
+        sandbox = new NashornSandbox.NashornSandboxBuilder()
+                .withInactiveTimeout(1)
+                .build();
     }
 
     @Test
