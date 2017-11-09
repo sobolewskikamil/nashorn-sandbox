@@ -18,8 +18,8 @@ public class JvmInstance {
     public static void main(String[] args) {
         String nashornExecutorId = args[0];
         setupEnvironment(nashornExecutorId);
-        waitForRequests();
-        unbindRegistry(nashornExecutorId);
+        /*waitForRequests();
+        unbindRegistry(nashornExecutorId);*/
     }
 
     public static void setPossibleInactivityTime(int seconds) {

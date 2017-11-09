@@ -43,6 +43,7 @@ public class LoadBalancer {
         String id = loadBalance();
         NashornExecutor executor = getExecutor(id);
         try {
+            System.out.println("Main process: " + ProcessHandle.current().pid());
             return executor.execute(script, args);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
