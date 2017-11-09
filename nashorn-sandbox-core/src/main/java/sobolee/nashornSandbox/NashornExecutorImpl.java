@@ -19,7 +19,8 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
 
     @Override
     public Object execute(String script, Map<String, Object> args) throws RemoteException {
-        Bindings bindings = new SimpleBindings(args);
+        Bindings bindings = new SimpleBindings();
+        bindings.putAll(args);
         try {
             Object result = engine.eval(script, bindings);
             timeOfLastRequest = now();

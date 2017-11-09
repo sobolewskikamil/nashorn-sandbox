@@ -12,5 +12,5 @@ public interface NashornExecutor extends Remote {
 
     Object invokeFunction(String function, String script, Map<String, Object> args) throws RemoteException;
 
-    DateTime getTimeOfLastRequest();
+    DateTime getTimeOfLastRequest() throws RemoteException;
 }

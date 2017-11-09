@@ -8,10 +8,10 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SimpleJavaScriptExecutionTest {
-    private static Sandbox sandbox;
+    private Sandbox sandbox;
 
     @BeforeEach
-    public static void setUpEnvironment() {
+    public void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
                 .withInactiveTimeout(1)
                 .build();

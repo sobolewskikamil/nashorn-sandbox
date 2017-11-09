@@ -19,13 +19,19 @@ public class LoadBalancer {
     private long memoryPerInstance;
     private int numberOfInstances;
 
+    static {
+        try {
+            LocateRegistry.createRegistry(1099);
+        } catch (RemoteException ignored) {
+        }
+    }
+
     public LoadBalancer(int numberOfInstances, long memoryPerInstance) {
         this.memoryPerInstance = memoryPerInstance;
         this.numberOfInstances = numberOfInstances;
     }
 
     public void start() {
-        tryToCreateRegistry();
         for (int i = 0; i < numberOfInstances; i++) {
             String id = UUID.randomUUID().toString();
             Process process = startProcess(id);
@@ -83,12 +89,13 @@ public class LoadBalancer {
                 "bin" + File.separator +
                 "java";
         String classpath = System.getProperty("java.class.path");
-        String className = (NashornExecutorImpl.class).getCanonicalName();
+        String className = (JvmInstance.class).getCanonicalName();
         String heapSize = format("-Xmx%sm", memoryPerInstance);
 
         ProcessBuilder builder = new ProcessBuilder(
                 javaBin, heapSize, "-cp", classpath, className, id);
 
+        builder.inheritIO();
         try {
             return builder.start();
         } catch (IOException e) {
