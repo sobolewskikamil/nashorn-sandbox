@@ -5,6 +5,7 @@ import org.joda.time.Seconds;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 import static java.rmi.registry.LocateRegistry.getRegistry;
 import static org.joda.time.DateTime.now;
@@ -18,8 +19,8 @@ public class JvmInstance {
     public static void main(String[] args) {
         String nashornExecutorId = args[0];
         setupEnvironment(nashornExecutorId);
-        /*waitForRequests();
-        unbindRegistry(nashornExecutorId);*/
+        waitForRequests();
+        unbindRegistry(nashornExecutorId);
     }
 
     public static void setPossibleInactivityTime(int seconds) {
@@ -43,6 +44,7 @@ public class JvmInstance {
     private static void unbindRegistry(String id) {
         try {
             registry.unbind(id);
+            UnicastRemoteObject.unexportObject(nashornExecutor, true);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }

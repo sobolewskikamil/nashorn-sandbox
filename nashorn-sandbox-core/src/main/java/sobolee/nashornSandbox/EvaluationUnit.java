@@ -12,4 +12,6 @@ public class EvaluationUnit {
     public String getId() {
         return id;
     }
+
+    public Process getProcess() { return process; }
 }

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +20,25 @@ public class LoadBalancer {
     private List<EvaluationUnit> evaluationUnits = new ArrayList<>();
     private long memoryPerInstance;
     private int numberOfInstances;
+    static Registry registry;
 
     static {
         try {
-            LocateRegistry.createRegistry(1099);
-        } catch (RemoteException ignored) {
+            registry = LocateRegistry.createRegistry(1099);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
     public LoadBalancer(int numberOfInstances, long memoryPerInstance) {
         this.memoryPerInstance = memoryPerInstance;
         this.numberOfInstances = numberOfInstances;
+
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            public void run(){
+                close();
+            }
+        });
     }
 
     public void start() {
@@ -39,11 +49,24 @@ public class LoadBalancer {
         }
     }
 
+    public void close() {
+        for(EvaluationUnit eu : evaluationUnits){
+            Process process = eu.getProcess();
+            process.destroyForcibly();
+        }
+        try {
+            UnicastRemoteObject.unexportObject(registry, true);
+        }
+        catch(RemoteException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public Object evaluate(String script, Map<String, Object> args) {
         String id = loadBalance();
         NashornExecutor executor = getExecutor(id);
         try {
-            System.out.println("Main process: " + ProcessHandle.current().pid());
+            //System.out.println("Main process: " + ProcessHandle.current().pid());
             return executor.execute(script, args);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -62,7 +85,7 @@ public class LoadBalancer {
 
     private void tryToCreateRegistry() {
         try {
-            LocateRegistry.createRegistry(1099);
+            registry = LocateRegistry.createRegistry(1099);
         } catch (RemoteException ignored) {
         }
     }

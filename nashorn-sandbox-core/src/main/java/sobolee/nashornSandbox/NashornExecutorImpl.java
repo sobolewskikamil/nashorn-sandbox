@@ -21,7 +21,7 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     public Object execute(String script, Map<String, Object> args) throws RemoteException {
         Bindings bindings = new SimpleBindings();
         bindings.putAll(args);
-        System.out.println("Evaluation process: " + ProcessHandle.current().pid());
+        //System.out.println("Evaluation process: " + ProcessHandle.current().pid());
         try {
             Object result = engine.eval(script, bindings);
             timeOfLastRequest = now();
