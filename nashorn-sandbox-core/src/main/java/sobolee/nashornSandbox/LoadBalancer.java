@@ -1,6 +1,7 @@
 package sobolee.nashornSandbox;
 
 import sobolee.nashornSandbox.exceptions.EnvironmentSetupException;
+import sobolee.nashornSandbox.requests.EvaluationRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -20,13 +20,13 @@ public class LoadBalancer {
     private List<EvaluationUnit> evaluationUnits = new ArrayList<>();
     private long memoryPerInstance;
     private int numberOfInstances;
-    static Registry registry;
+    private static Registry registry;
 
     static {
         try {
             registry = LocateRegistry.createRegistry(1099);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -34,59 +34,20 @@ public class LoadBalancer {
         this.memoryPerInstance = memoryPerInstance;
         this.numberOfInstances = numberOfInstances;
 
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            public void run(){
-                close();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
-    public void start() {
-        for (int i = 0; i < numberOfInstances; i++) {
-            String id = UUID.randomUUID().toString();
-            Process process = startProcess(id);
-            evaluationUnits.add(new EvaluationUnit(id, process));
-        }
-    }
 
-    public void close() {
-        for(EvaluationUnit eu : evaluationUnits){
-            Process process = eu.getProcess();
-            process.destroyForcibly();
-        }
+    public Object evaluate(EvaluationRequest evaluationRequest) {
+        EvaluationUnit evaluationUnit = loadBalance();
+        NashornExecutor executor = getExecutor(evaluationUnit.getId());
         try {
-            UnicastRemoteObject.unexportObject(registry, true);
-        }
-        catch(RemoteException e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Object evaluate(String script, Map<String, Object> args) {
-        String id = loadBalance();
-        NashornExecutor executor = getExecutor(id);
-        try {
-            //System.out.println("Main process: " + ProcessHandle.current().pid());
-            return executor.execute(script, args);
+            evaluationUnit.setEvaluating(true);
+            Object result = executor.execute(evaluationRequest);
+            evaluationUnit.setEvaluating(false);
+            return result;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public Object invokeFunction(String function, String script, Map<String, Object> args) {
-        String id = loadBalance();
-        NashornExecutor executor = getExecutor(id);
-        try {
-            return executor.invokeFunction(function, script, args);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void tryToCreateRegistry() {
-        try {
-            registry = LocateRegistry.createRegistry(1099);
-        } catch (RemoteException ignored) {
         }
     }
 
@@ -97,21 +58,44 @@ public class LoadBalancer {
             try {
                 np = (NashornExecutor) LocateRegistry.getRegistry(1099).lookup(id);
                 isBound = true;
-            } catch (RemoteException | NotBoundException e) {
+            } catch (RemoteException | NotBoundException ignored) {
             }
         }
         return np;
     }
 
-    private String loadBalance() {
-        return evaluationUnits.get(0).getId();
+    private EvaluationUnit loadBalance() {
+        if (evaluationUnits.size() == numberOfInstances) {
+            return waitForAvailableEvaluationUnit();
+        }
+        for (EvaluationUnit evaluationUnit : evaluationUnits) {
+            if (!evaluationUnit.isEvaluating()) {
+                return evaluationUnit;
+            }
+        }
+        return startProcess();
     }
 
-    private Process startProcess(String id) {
-        String javaHome = System.getProperty("java.home");
-        String javaBin = javaHome + File.separator +
-                "bin" + File.separator +
-                "java";
+    private EvaluationUnit waitForAvailableEvaluationUnit() {
+        while (true) {
+            for (EvaluationUnit evaluationUnit : evaluationUnits) {
+                if (!evaluationUnit.isEvaluating()) {
+                    return evaluationUnit;
+                }
+            }
+        }
+    }
+
+    private EvaluationUnit startProcess() {
+        String id = UUID.randomUUID().toString();
+        Process process = startProcessWithId(id);
+        EvaluationUnit evaluationUnit = new EvaluationUnit(id, process, false);
+        evaluationUnits.add(evaluationUnit);
+        return evaluationUnit;
+    }
+
+    private Process startProcessWithId(String id) {
+        String javaBin = getJavaBin();
         String classpath = System.getProperty("java.class.path");
         String className = (JvmInstance.class).getCanonicalName();
         String heapSize = format("-Xmx%sm", memoryPerInstance);
@@ -124,6 +108,25 @@ public class LoadBalancer {
             return builder.start();
         } catch (IOException e) {
             throw new EnvironmentSetupException("Unable to start JVM");
+        }
+    }
+
+    private String getJavaBin() {
+        String javaHome = System.getProperty("java.home");
+        return javaHome + File.separator +
+                "bin" + File.separator +
+                "java";
+    }
+
+    private void close() {
+        for (EvaluationUnit eu : evaluationUnits) {
+            Process process = eu.getProcess();
+            process.destroyForcibly();
+        }
+        try {
+            UnicastRemoteObject.unexportObject(registry, true);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
     }
 }

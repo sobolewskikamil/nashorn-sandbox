@@ -1,16 +1,17 @@
 package sobolee.nashornSandbox;
 
 import org.joda.time.DateTime;
+import sobolee.nashornSandbox.requests.EvaluationRequest;
+import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Map;
 
 public interface NashornExecutor extends Remote {
 
-    Object execute(String script, Map<String, Object> args) throws RemoteException;
+    Object execute(EvaluationRequest evaluationRequest) throws RemoteException;
 
-    Object invokeFunction(String function, String script, Map<String, Object> args) throws RemoteException;
+    Object execute(FunctionEvaluationRequest evaluationRequest) throws RemoteException;
 
     DateTime getTimeOfLastRequest() throws RemoteException;
 }

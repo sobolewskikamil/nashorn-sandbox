@@ -1,6 +1,8 @@
 package sobolee.nashornSandbox;
 
 import org.joda.time.DateTime;
+import sobolee.nashornSandbox.requests.EvaluationRequest;
+import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 
 import javax.script.*;
 import java.rmi.RemoteException;
@@ -10,7 +12,7 @@ import java.util.Map;
 import static org.joda.time.DateTime.now;
 
 public class NashornExecutorImpl extends UnicastRemoteObject implements NashornExecutor {
-    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+    private static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
     private DateTime timeOfLastRequest;
 
     NashornExecutorImpl() throws RemoteException {
@@ -18,10 +20,11 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     }
 
     @Override
-    public Object execute(String script, Map<String, Object> args) throws RemoteException {
+    public Object execute(EvaluationRequest evaluationRequest) throws RemoteException {
+        String script = evaluationRequest.getScript();
+        Map<String, Object> args = evaluationRequest.getArgs();
         Bindings bindings = new SimpleBindings();
         bindings.putAll(args);
-        //System.out.println("Evaluation process: " + ProcessHandle.current().pid());
         try {
             Object result = engine.eval(script, bindings);
             timeOfLastRequest = now();
@@ -32,7 +35,10 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     }
 
     @Override
-    public Object invokeFunction(String function, String script, Map<String, Object> args) throws RemoteException {
+    public Object execute(FunctionEvaluationRequest evaluationRequest) throws RemoteException {
+        String function = evaluationRequest.getFunction();
+        String script = evaluationRequest.getScript();
+        Map<String, Object> args = evaluationRequest.getArgs();
         try {
             engine.eval(script);
             Invocable invocable = (Invocable) engine;

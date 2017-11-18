@@ -2,11 +2,14 @@ package sobolee.nashornSandbox;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringJUnitConfig
 class SimpleJavaScriptExecutionTest {
     private static Sandbox sandbox;
 
@@ -39,5 +42,17 @@ class SimpleJavaScriptExecutionTest {
 
         // then
         assertThat(result).isEqualTo("test");
+    }
+
+    @Configuration
+    static class ContextConfiguration {
+
+        SandboxClassFilter sandboxClassFilter() {
+            return new SandboxClassFilter();
+        }
+
+        SandboxPermissions sandboxPermissions() {
+            return new SandboxPermissions();
+        }
     }
 }

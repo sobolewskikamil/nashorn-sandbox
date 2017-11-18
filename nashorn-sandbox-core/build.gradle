@@ -3,4 +3,6 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
+    compile group: 'org.springframework', name: 'spring-beans', version: '5.0.1.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '5.0.1.RELEASE'
 }

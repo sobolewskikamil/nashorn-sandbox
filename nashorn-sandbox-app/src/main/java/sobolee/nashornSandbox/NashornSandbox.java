@@ -1,24 +1,41 @@
 package sobolee.nashornSandbox;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import sobolee.nashornSandbox.requests.EvaluationRequest;
+import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
+
 import java.util.Map;
 
 public class NashornSandbox implements Sandbox {
     private long memoryLimit = 200;
-    private final SandboxClassFilter sandboxClassFilter = new SandboxClassFilter();
-    private final SandboxPermissions sandboxPermissions = new SandboxPermissions();
     private final LoadBalancer loadBalancer = new LoadBalancer(1, memoryLimit);
+
+    @Autowired
+    private SandboxClassFilter sandboxClassFilter;
+
+    @Autowired
+    private SandboxPermissions sandboxPermissions;
 
     private NashornSandbox() {
     }
 
+    /**
+     * Safely evaluates script. Result of the last line in the script will be returned as a result.
+     *
+     * @param script Script to evaluate.
+     * @param args   Actual argument objects with referring identifiers.
+     * @return Result of evaluation of the last line in the script.
+     */
     @Override
     public Object evaluate(final String script, final Map<String, Object> args) {
-        return loadBalancer.evaluate(script, args);
+        EvaluationRequest evaluationRequest = new EvaluationRequest(script, args);
+        return loadBalancer.evaluate(evaluationRequest);
     }
 
     @Override
     public Object invokeFunction(String function, String script, Map<String, Object> args) {
-        return loadBalancer.invokeFunction(function, script, args);
+        EvaluationRequest evaluationRequest = new FunctionEvaluationRequest(function, script, args);
+        return loadBalancer.evaluate(evaluationRequest);
     }
 
 
@@ -30,11 +47,11 @@ public class NashornSandbox implements Sandbox {
         sandboxClassFilter.add(aClass.getName());
     }
 
-    public void allowAction(final SandboxPermissions.Action action) {
+    public void allowAction(final sobolee.nashornSandbox.SandboxPermissions.Action action) {
         sandboxPermissions.allowAction(action);
     }
 
-    public void disallowAction(final SandboxPermissions.Action action) {
+    public void disallowAction(final sobolee.nashornSandbox.SandboxPermissions.Action action) {
         sandboxPermissions.disallowAction(action);
     }
 
@@ -47,7 +64,6 @@ public class NashornSandbox implements Sandbox {
     }
 
     public static class NashornSandboxBuilder implements SandboxBuilder {
-
         private final NashornSandbox sandbox = new NashornSandbox();
 
         public SandboxBuilder withMemoryLimit(final long memoryLimit) {
@@ -62,7 +78,6 @@ public class NashornSandbox implements Sandbox {
 
         @Override
         public Sandbox build() {
-            sandbox.loadBalancer.start();
             return sandbox;
         }
     }

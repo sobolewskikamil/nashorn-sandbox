@@ -3,4 +3,5 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     compile project(':nashorn-sandbox-app')
+    testCompile group: 'org.springframework', name: 'spring-test', version: '5.0.1.RELEASE'
 }
