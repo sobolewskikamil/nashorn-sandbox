@@ -32,18 +32,6 @@ class SimpleJavaScriptExecutionTest {
         assertThat(result).isEqualTo("test");
     }
 
-    @Test
-    public void shouldWorkOnTheSameProcess() {
-        // given
-        String script = "result = \"test\";";
-
-        // when
-        Object result = sandbox.evaluate(script, Map.of());
-
-        // then
-        assertThat(result).isEqualTo("test");
-    }
-
     @Configuration
     static class ContextConfiguration {
 

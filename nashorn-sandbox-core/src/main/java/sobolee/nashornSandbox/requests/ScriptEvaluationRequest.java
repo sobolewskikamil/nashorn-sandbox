@@ -3,11 +3,11 @@ package sobolee.nashornSandbox.requests;
 import java.io.Serializable;
 import java.util.Map;
 
-public class EvaluationRequest implements Serializable {
+public class ScriptEvaluationRequest implements Serializable {
     private final String script;
     private final Map<String, Object> args;
 
-    public EvaluationRequest(String script, Map<String, Object> args) {
+    public ScriptEvaluationRequest(String script, Map<String, Object> args) {
         this.script = script;
         this.args = args;
     }
