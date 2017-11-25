@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
@@ -21,15 +24,29 @@ class SimpleJavaScriptExecutionTest {
     }
 
     @Test
-    public void shouldProperlyEvaluateJavaScript() {
+    public void shouldProperlyEvaluateJavaScript() throws ExecutionException, InterruptedException {
         // given
         String script = "result = \"test\";";
 
         // when
-        Object result = sandbox.evaluate(script, Map.of());
+        CompletableFuture<Object> result = sandbox.evaluate(script, emptyMap());
 
         // then
-        assertThat(result).isEqualTo("test");
+        assertThat(result.get()).isEqualTo("test");
+    }
+
+    @Test
+    public void shouldProperlyInvokeFunction() throws ExecutionException, InterruptedException {
+        // given
+        String script = "function f() {" +
+                "   return \"test\"; " +
+                "}";
+
+        // when
+        CompletableFuture<Object> result = sandbox.invokeFunction("f", script, emptyList());
+
+        // then
+        assertThat(result.get()).isEqualTo("test");
     }
 
     @Configuration

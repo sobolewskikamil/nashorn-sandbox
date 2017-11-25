@@ -8,7 +8,6 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class ExceptionTest {
-
     private Sandbox sandbox;
 
     @BeforeEach
@@ -26,8 +25,8 @@ public class ExceptionTest {
                 "    array.push(1);" +
                 "}";
 
-        //when / then
-        assertThatThrownBy(() -> sandbox.evaluate(script, emptyMap()))
+        // when / then
+        assertThatThrownBy(() -> sandbox.evaluate(script, emptyMap()).get())
                 .hasRootCauseInstanceOf(OutOfMemoryError.class);
     }
 

@@ -6,10 +6,14 @@ import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static java.util.Objects.requireNonNull;
 
 public class NashornSandbox implements Sandbox {
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
     private long memoryLimit = 200;
     private final NashornEvaluator evaluator = new NashornEvaluator(1, memoryLimit);
 
@@ -30,24 +34,23 @@ public class NashornSandbox implements Sandbox {
      * @return Result of evaluation of the last line in the script.
      */
     @Override
-    public Object evaluate(String script, Map<String, Object> args) {
+    public CompletableFuture<Object> evaluate(String script, Map<String, Object> args) {
         requireNonNull(script, "script cannot be null");
         requireNonNull(args, "args cannot be null");
 
         ScriptEvaluationRequest evaluationRequest = new ScriptEvaluationRequest(script, args);
-        return evaluator.evaluate(evaluationRequest);
+        return CompletableFuture.supplyAsync(() -> evaluator.evaluate(evaluationRequest));
     }
 
     @Override
-    public Object invokeFunction(String function, String script, List<Object> args) {
+    public CompletableFuture<Object> invokeFunction(String function, String script, List<Object> args) {
         requireNonNull(function, "function cannot be null");
         requireNonNull(script, "script cannot be null");
         requireNonNull(args, "args cannot be null");
 
         FunctionEvaluationRequest evaluationRequest = new FunctionEvaluationRequest(function, script, args);
-        return evaluator.evaluate(evaluationRequest);
+        return CompletableFuture.supplyAsync(() -> evaluator.evaluate(evaluationRequest));
     }
-
 
     public void allow(Class<?> aClass) {
         sandboxClassFilter.add(aClass.getName());

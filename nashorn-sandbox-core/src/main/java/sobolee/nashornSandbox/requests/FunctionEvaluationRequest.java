@@ -1,8 +1,9 @@
 package sobolee.nashornSandbox.requests;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class FunctionEvaluationRequest {
+public class FunctionEvaluationRequest implements Serializable {
     private final String function;
     private final String script;
     private final List<Object> args;
