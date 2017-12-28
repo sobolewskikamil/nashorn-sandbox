@@ -1,6 +1,7 @@
 package sobolee.nashornSandbox;
 
 import org.junit.jupiter.api.Test;
+import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
 
 import java.util.List;
 

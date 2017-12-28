@@ -1,6 +1,8 @@
 package sobolee.nashornSandbox;
 
-public class EvaluationUnit {
+import sobolee.nashornSandbox.loadbalancing.Observable;
+
+public class EvaluationUnit extends Observable{
     private final String id;
     private final Process process;
     private boolean evaluating;
@@ -23,11 +25,16 @@ public class EvaluationUnit {
         return process;
     }
 
+    @Override
     public boolean isEvaluating() {
         return evaluating;
     }
 
+    @Override
     public void setEvaluating(boolean evaluating) {
         this.evaluating = evaluating;
+        if(!evaluating){
+            notifyObserver();
+        }
     }
 }

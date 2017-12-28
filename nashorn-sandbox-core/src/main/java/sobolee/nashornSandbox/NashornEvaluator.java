@@ -1,5 +1,7 @@
 package sobolee.nashornSandbox;
 
+import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
+import sobolee.nashornSandbox.remote.NashornExecutor;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
@@ -19,25 +21,30 @@ public class NashornEvaluator {
     }
 
     public Object evaluate(ScriptEvaluationRequest evaluationRequest) {
-        NashornExecutor executor = getNashornExecutor();
+        EvaluationUnit evaluationUnit = loadBalancer.get();
+        NashornExecutor executor = getNashornExecutor(evaluationUnit);
         try {
-            return executor.execute(evaluationRequest);
+            Object result = executor.execute(evaluationRequest);
+            evaluationUnit.setEvaluating(false);
+            return result;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Object evaluate(FunctionEvaluationRequest evaluationRequest) {
-        NashornExecutor executor = getNashornExecutor();
+        EvaluationUnit evaluationUnit = loadBalancer.get();
+        NashornExecutor executor = getNashornExecutor(evaluationUnit);
         try {
-            return executor.execute(evaluationRequest);
+            Object result = executor.execute(evaluationRequest);
+            evaluationUnit.setEvaluating(false);
+            return result;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private NashornExecutor getNashornExecutor() {
-        EvaluationUnit evaluationUnit = loadBalancer.get();
+    private NashornExecutor getNashornExecutor(EvaluationUnit evaluationUnit) {
         String id = evaluationUnit.getId();
         return rmiManager.getExecutor(id);
     }

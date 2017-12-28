@@ -1,6 +1,7 @@
 package sobolee.nashornSandbox;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import sobolee.nashornSandbox.remote.JvmInstance;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
