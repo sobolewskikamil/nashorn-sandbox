@@ -1,4 +1,4 @@
-package sobolee.nashornSandbox;
+package sobolee.nashornSandbox.remote;
 
 import org.joda.time.DateTime;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
@@ -16,7 +16,7 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     private static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
     private DateTime timeOfLastRequest;
 
-    NashornExecutorImpl() throws RemoteException {
+    public NashornExecutorImpl() throws RemoteException {
         super();
     }
 

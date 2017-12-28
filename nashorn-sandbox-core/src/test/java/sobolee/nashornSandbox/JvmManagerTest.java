@@ -2,6 +2,7 @@ package sobolee.nashornSandbox;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
 
 import java.util.List;
 
@@ -10,16 +11,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JvmManagerTest {
     private JvmManager jvmManager;
+    private LoadBalancer loadBalancer;
 
     @BeforeEach
     public void setUp() {
         jvmManager = new JvmManager(50);
+        loadBalancer = new LoadBalancer(1, 50);
     }
 
     @Test
     public void shouldProperlyStartProcess() {
         // when
-        jvmManager.start();
+        jvmManager.start(loadBalancer);
 
         // then
         List<EvaluationUnit> evaluationUnits = jvmManager.getEvaluationUnits();

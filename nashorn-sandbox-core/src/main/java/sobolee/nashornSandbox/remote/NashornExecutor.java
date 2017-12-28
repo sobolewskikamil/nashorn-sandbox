@@ -1,4 +1,4 @@
-package sobolee.nashornSandbox;
+package sobolee.nashornSandbox.remote;
 
 import org.joda.time.DateTime;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;

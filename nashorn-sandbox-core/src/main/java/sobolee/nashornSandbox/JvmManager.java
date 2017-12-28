@@ -1,5 +1,8 @@
 package sobolee.nashornSandbox;
 
+import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
+import sobolee.nashornSandbox.remote.JvmInstance;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -24,10 +27,11 @@ public class JvmManager {
         return evaluationUnits;
     }
 
-    public EvaluationUnit start() {
+    public EvaluationUnit start(LoadBalancer loadBalancer) {
         String id = randomUUID().toString();
         Process process = startProcessWithId(id);
         EvaluationUnit evaluationUnit = new EvaluationUnit(id, process, false);
+        evaluationUnit.registerObserver(loadBalancer);
         evaluationUnits.add(evaluationUnit);
         return evaluationUnit;
     }
@@ -62,4 +66,5 @@ public class JvmManager {
                 "bin" + File.separator +
                 "java";
     }
+
 }
