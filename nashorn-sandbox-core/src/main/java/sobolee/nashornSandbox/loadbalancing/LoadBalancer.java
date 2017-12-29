@@ -6,11 +6,14 @@ import sobolee.nashornSandbox.JvmManager;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class LoadBalancer implements Observer{
     private final JvmManager jvmManager;
     private final int numberOfInstances;
     private Queue<Thread> threadQueue = new LinkedList<Thread>();
+    private final Lock LOCK = new ReentrantLock();
 
     public LoadBalancer(int numberOfInstances, long memoryPerInstance) {
         this(new JvmManager(memoryPerInstance), numberOfInstances);
@@ -26,10 +29,12 @@ public class LoadBalancer implements Observer{
         if (evaluationUnits.size() == numberOfInstances) {
             return waitForAvailableEvaluationUnit(evaluationUnits);
         }
-        for (EvaluationUnit evaluationUnit : evaluationUnits) {
-            if (!evaluationUnit.isEvaluating()) {
-                evaluationUnit.setEvaluating(true);
-                return evaluationUnit;
+        synchronized (LOCK) {
+            for (EvaluationUnit evaluationUnit : evaluationUnits) {
+                if (!evaluationUnit.isEvaluating()) {
+                    evaluationUnit.setEvaluating(true);
+                    return evaluationUnit;
+                }
             }
         }
         return jvmManager.start(this);
@@ -37,10 +42,13 @@ public class LoadBalancer implements Observer{
 
     private EvaluationUnit waitForAvailableEvaluationUnit(List<EvaluationUnit> evaluationUnits) {
         while (true) {
-            for (EvaluationUnit evaluationUnit : evaluationUnits) {
-                if (!evaluationUnit.isEvaluating()) {
-                    evaluationUnit.setEvaluating(true);
-                    return evaluationUnit;
+            synchronized (LOCK) {
+                for (EvaluationUnit evaluationUnit : evaluationUnits) {
+                    if (!evaluationUnit.isEvaluating()) {
+                        evaluationUnit.setEvaluating(true);
+                        threadQueue.remove(Thread.currentThread());
+                        return evaluationUnit;
+                    }
                 }
             }
             try {
@@ -54,9 +62,11 @@ public class LoadBalancer implements Observer{
 
     @Override
     public void notifyFreeJvm() {
-        Thread thread = threadQueue.poll();
-        if(thread != null){
-            thread.notify();
+        synchronized (LOCK) {
+            Thread thread = threadQueue.peek();
+            if (thread != null) {
+                thread.notify();
+            }
         }
     }
 }

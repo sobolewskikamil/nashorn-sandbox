@@ -51,10 +51,7 @@ public class JvmManager {
 
         ProcessBuilder builder = new ProcessBuilder(
                 javaBin, heapSize, "-cp", classpath, className, id);
-        for(String str : builder.command()){
-            System.out.print(str+" ");
-        }
-        System.out.println();
+
         try {
             return builder.start();
         } catch (IOException e) {

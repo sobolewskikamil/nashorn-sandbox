@@ -4,8 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.ExecutionException;
+
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class ExceptionTest {
     private Sandbox sandbox;
