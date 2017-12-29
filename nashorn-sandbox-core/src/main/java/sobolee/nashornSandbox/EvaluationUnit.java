@@ -1,5 +1,6 @@
 package sobolee.nashornSandbox;
 
+import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
 import sobolee.nashornSandbox.loadbalancing.Observable;
 
 public class EvaluationUnit extends Observable{
@@ -15,6 +16,11 @@ public class EvaluationUnit extends Observable{
     public EvaluationUnit(String id, Process process, boolean evaluating) {
         this(id, process);
         this.evaluating = evaluating;
+    }
+
+    public EvaluationUnit(String id, Process process, boolean evaluating, LoadBalancer loadBalancer) {
+        this(id, process, evaluating);
+        registerObserver(loadBalancer);
     }
 
     public String getId() {

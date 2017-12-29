@@ -23,6 +23,7 @@ class LoadBalancerTest {
         // given
         EvaluationUnit evalUnit = new EvaluationUnit("id", null, false);
         LoadBalancer loadBalancer = getLoadBalancer(singletonList(evalUnit), 1);
+        evalUnit.registerObserver(loadBalancer);
 
         // when
         EvaluationUnit actual = loadBalancer.get();

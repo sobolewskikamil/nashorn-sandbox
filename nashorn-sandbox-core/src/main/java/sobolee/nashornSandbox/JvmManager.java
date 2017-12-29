@@ -30,8 +30,7 @@ public class JvmManager {
     public EvaluationUnit start(LoadBalancer loadBalancer) {
         String id = randomUUID().toString();
         Process process = startProcessWithId(id);
-        EvaluationUnit evaluationUnit = new EvaluationUnit(id, process, false);
-        evaluationUnit.registerObserver(loadBalancer);
+        EvaluationUnit evaluationUnit = new EvaluationUnit(id, process, false, loadBalancer);
         evaluationUnits.add(evaluationUnit);
         return evaluationUnit;
     }
@@ -52,7 +51,10 @@ public class JvmManager {
 
         ProcessBuilder builder = new ProcessBuilder(
                 javaBin, heapSize, "-cp", classpath, className, id);
-
+        for(String str : builder.command()){
+            System.out.print(str+" ");
+        }
+        System.out.println();
         try {
             return builder.start();
         } catch (IOException e) {

@@ -20,8 +20,9 @@ public class NashornEvaluatorTest {
 
     @BeforeEach
     public void setUp() throws RemoteException {
+        //LoadBalancer balancerMock = new LoadBalancer(1, 50);
         LoadBalancer balancerMock = mock(LoadBalancer.class);
-        when(balancerMock.get()).thenReturn(new EvaluationUnit("test", null));
+        when(balancerMock.get()).thenReturn(new EvaluationUnit("test", null, false, balancerMock));
 
         RmiManager rmiManagerMock = mock(RmiManager.class);
         when(rmiManagerMock.getExecutor("test")).thenReturn(new NashornExecutorImpl());

@@ -16,7 +16,7 @@ class JvmManagerTest {
     @BeforeEach
     public void setUp() {
         jvmManager = new JvmManager(50);
-        loadBalancer = new LoadBalancer(1, 50);
+        loadBalancer = new LoadBalancer(jvmManager, 1);
     }
 
     @Test
