@@ -10,6 +10,14 @@ public interface Sandbox {
 
     CompletableFuture<Object> invokeFunction(String function, String script, List<Object> args);
 
+    void allowClass(Class<?> aClass);
+
+    void disallowClass(Class<?> aClass);
+
+    void allowAction(SandboxPermissions.Action action);
+
+    void disallowAction(SandboxPermissions.Action action);
+
     interface SandboxBuilder {
 
         Sandbox build();

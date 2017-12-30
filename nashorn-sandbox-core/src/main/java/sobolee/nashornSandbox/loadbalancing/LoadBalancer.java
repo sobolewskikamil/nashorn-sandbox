@@ -40,6 +40,10 @@ public class LoadBalancer implements Observer{
         return jvmManager.start(this);
     }
 
+    public List<EvaluationUnit> getAllUnits(){
+        return jvmManager.getEvaluationUnits();
+    }
+
     private EvaluationUnit waitForAvailableEvaluationUnit(List<EvaluationUnit> evaluationUnits) {
         while (true) {
             synchronized (LOCK) {

@@ -44,6 +44,28 @@ public class NashornEvaluator {
         }
     }
 
+    public void applyFilter(SandboxClassFilter filter){
+        for(EvaluationUnit evaluationUnit : loadBalancer.getAllUnits()){
+            NashornExecutor executor = getNashornExecutor(evaluationUnit);
+            try {
+                executor.applyFilter(filter);
+            } catch (RemoteException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void applyPermissions(SandboxPermissions permissions){
+        for(EvaluationUnit evaluationUnit : loadBalancer.getAllUnits()){
+            NashornExecutor executor = getNashornExecutor(evaluationUnit);
+            try {
+                executor.applyPermissions(permissions);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private NashornExecutor getNashornExecutor(EvaluationUnit evaluationUnit) {
         String id = evaluationUnit.getId();
         return rmiManager.getExecutor(id);

@@ -14,15 +14,14 @@ import java.util.concurrent.Executors;
 import static java.util.Objects.requireNonNull;
 
 public class NashornSandbox implements Sandbox {
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
     private long memoryLimit = 200;
     private final NashornEvaluator evaluator = new NashornEvaluator(1, memoryLimit);
 
     @Autowired
-    private SandboxClassFilter sandboxClassFilter;
+    private SandboxClassFilter sandboxClassFilter = new SandboxClassFilter();
 
     @Autowired
-    private SandboxPermissions sandboxPermissions;
+    private SandboxPermissions sandboxPermissions = new SandboxPermissions();
 
     private NashornSandbox() {
     }
@@ -53,20 +52,24 @@ public class NashornSandbox implements Sandbox {
         return CompletableFuture.supplyAsync(() -> evaluator.evaluate(evaluationRequest));
     }
 
-    public void allow(Class<?> aClass) {
+    public void allowClass(Class<?> aClass) {
         sandboxClassFilter.add(aClass.getName());
+        evaluator.applyFilter(sandboxClassFilter);
     }
 
-    public void disallow(Class<?> aClass) {
-        sandboxClassFilter.add(aClass.getName());
+    public void disallowClass(Class<?> aClass) {
+        sandboxClassFilter.remove(aClass.getName());
+        evaluator.applyFilter(sandboxClassFilter);
     }
 
     public void allowAction(SandboxPermissions.Action action) {
         sandboxPermissions.allowAction(action);
+        evaluator.applyPermissions(sandboxPermissions);
     }
 
     public void disallowAction(SandboxPermissions.Action action) {
         sandboxPermissions.disallowAction(action);
+        evaluator.applyPermissions(sandboxPermissions);
     }
 
     private void setInactiveTimeout(int seconds) {

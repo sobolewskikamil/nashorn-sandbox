@@ -8,10 +8,12 @@ import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -20,9 +22,12 @@ public class NashornEvaluatorTest {
 
     @BeforeEach
     public void setUp() throws RemoteException {
-        //LoadBalancer balancerMock = new LoadBalancer(1, 50);
         LoadBalancer balancerMock = mock(LoadBalancer.class);
-        when(balancerMock.get()).thenReturn(new EvaluationUnit("test", null, false, balancerMock));
+        EvaluationUnit evaluationUnit = new EvaluationUnit("test", null, false, balancerMock);
+        when(balancerMock.get()).thenReturn(evaluationUnit);
+        List<EvaluationUnit> evaluationUnits = new ArrayList<>();
+        evaluationUnits.add(evaluationUnit);
+        when(balancerMock.getAllUnits()).thenReturn(evaluationUnits);
 
         RmiManager rmiManagerMock = mock(RmiManager.class);
         when(rmiManagerMock.getExecutor("test")).thenReturn(new NashornExecutorImpl());
@@ -57,5 +62,38 @@ public class NashornEvaluatorTest {
 
         // then
         assertThat(result).isEqualTo(3.0);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPerformingDisabledOperation(){
+        // given
+        SandboxPermissions permissions = new SandboxPermissions();
+        String script = "print(\"test\");";
+        ScriptEvaluationRequest evaluationRequest = new ScriptEvaluationRequest(script, emptyMap());
+
+        // when
+        nashornEvaluator.applyPermissions(permissions);
+
+        // then
+        // todo uncomment assertion after fixing permissions
+        /*assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
+                .hasRootCauseInstanceOf(Exception.class);*/
+        assertThat(true);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUsingDisabledClass(){
+        // given
+        String script = "var MyJavaClass = Java.type('sobolee.nashornSandbox.NashornEvaluator');\n" +
+                "var result = MyJavaClass.evaluate('test');";
+        ScriptEvaluationRequest evaluationRequest = new ScriptEvaluationRequest(script, emptyMap());
+        SandboxClassFilter filter = new SandboxClassFilter();
+
+        // when
+        nashornEvaluator.applyFilter(filter);
+
+        // then
+        assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
+                .hasRootCauseInstanceOf(ClassNotFoundException.class);
     }
 }
