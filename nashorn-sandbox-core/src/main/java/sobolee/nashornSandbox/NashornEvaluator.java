@@ -66,6 +66,17 @@ public class NashornEvaluator {
         }
     }
 
+    public void setCpuLimit(int limit){
+        for(EvaluationUnit evaluationUnit : loadBalancer.getAllUnits()){
+            NashornExecutor executor = getNashornExecutor(evaluationUnit);
+            try {
+                executor.setCpuLimit(limit);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private NashornExecutor getNashornExecutor(EvaluationUnit evaluationUnit) {
         String id = evaluationUnit.getId();
         return rmiManager.getExecutor(id);
