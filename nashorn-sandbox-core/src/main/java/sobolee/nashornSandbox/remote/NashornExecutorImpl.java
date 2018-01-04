@@ -4,14 +4,14 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.joda.time.DateTime;
 import sobolee.nashornSandbox.SandboxClassFilter;
 import sobolee.nashornSandbox.SandboxPermissions;
+import sobolee.nashornSandbox.exceptions.CpuTimeAbuseException;
+import sobolee.nashornSandbox.requests.EvaluationRequest;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
 import javax.script.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,6 +21,9 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     private static ScriptEngine engine;
     private static final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
     private DateTime timeOfLastRequest;
+    private int cpuLimit;
+    private SandboxClassFilter filter;
+    private SandboxPermissions permissions;
     private final Lock LOCK = new ReentrantLock();
 
     public NashornExecutorImpl() throws RemoteException {
@@ -30,39 +33,12 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
 
     @Override
     public Object execute(FunctionEvaluationRequest evaluationRequest) throws RemoteException {
-        String function = evaluationRequest.getFunction();
-        String script = evaluationRequest.getScript();
-        List<Object> args = evaluationRequest.getArgs();
-        try {
-            Object result;
-            synchronized (LOCK) {
-                engine.eval(script);
-                Invocable invocable = (Invocable) engine;
-                result = invocable.invokeFunction(function, args.toArray());
-            }
-            timeOfLastRequest = now();
-            return result;
-        } catch (ScriptException | NoSuchMethodException e) {
-            throw new RemoteException(e.getMessage());
-        }
+        return safeEval(evaluationRequest);
     }
 
     @Override
     public Object execute(ScriptEvaluationRequest evaluationRequest) throws RemoteException {
-        String script = evaluationRequest.getScript();
-        Map<String, Object> args = evaluationRequest.getArgs();
-        Bindings bindings = new SimpleBindings();
-        bindings.putAll(args);
-        try {
-            Object result;
-            synchronized (LOCK) {
-                result = engine.eval(script, bindings);
-            }
-            timeOfLastRequest = now();
-            return result;
-        } catch (ScriptException e) {
-            throw new RemoteException(e.getMessage());
-        }
+        return safeEval(evaluationRequest);
     }
 
     @Override
@@ -73,10 +49,40 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     @Override
     public void applyFilter(SandboxClassFilter filter) throws RemoteException {
         engine = factory.getScriptEngine(filter);
+        this.filter = filter;
     }
 
     @Override
     public void applyPermissions(SandboxPermissions permissions) throws RemoteException {
+        evaluatePermissions(permissions);
+        this.permissions = permissions;
+    }
+
+    @Override
+    public void setCpuLimit(int limit) throws RemoteException {
+        cpuLimit = limit;
+    }
+
+    private Object safeEval(EvaluationRequest request) throws RemoteException {
+        SafeEvaluator safeEvaluator = new SafeEvaluator(engine, request, cpuLimit);
+
+        Object res;
+        synchronized (LOCK) {
+            safeEvaluator.evaluate();
+            try {
+                res = safeEvaluator.getResult();
+            } catch (ScriptException | NoSuchMethodException | CpuTimeAbuseException e) {
+                throw new RemoteException(e.getMessage(), e);
+            }
+            timeOfLastRequest = now();
+            resetEngine();
+        }
+
+        return res;
+    }
+
+    private void evaluatePermissions(SandboxPermissions permissions){
+        // todo fix permissions
         final StringBuilder sb = new StringBuilder();
         if(!permissions.isAllowed(SandboxPermissions.Action.PRINT_FUNCTIONS)){
             sb.append("print=function(){};echo=function(){};");
@@ -100,6 +106,18 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
             }
         } catch (ScriptException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void resetEngine(){
+        if(filter != null){
+            engine = factory.getScriptEngine(filter);
+        }
+        else {
+            engine = factory.getScriptEngine();
+        }
+        if(permissions != null){
+            evaluatePermissions(permissions);
         }
     }
 }

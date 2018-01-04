@@ -3,7 +3,7 @@ package sobolee.nashornSandbox.requests;
 import java.io.Serializable;
 import java.util.List;
 
-public class FunctionEvaluationRequest implements Serializable {
+public class FunctionEvaluationRequest implements EvaluationRequest, Serializable {
     private final String function;
     private final String script;
     private final List<Object> args;

@@ -15,6 +15,7 @@ import static java.util.Objects.requireNonNull;
 
 public class NashornSandbox implements Sandbox {
     private long memoryLimit = 200;
+    private int cpuLimit;
     private final NashornEvaluator evaluator = new NashornEvaluator(1, memoryLimit);
 
     @Autowired
@@ -80,6 +81,10 @@ public class NashornSandbox implements Sandbox {
         this.memoryLimit = memoryLimit;
     }
 
+    private void setCpuLimit(int cpuLimit){
+        this.cpuLimit = cpuLimit;
+    }
+
     public static class NashornSandboxBuilder implements SandboxBuilder {
         private final NashornSandbox sandbox = new NashornSandbox();
 
@@ -90,6 +95,11 @@ public class NashornSandbox implements Sandbox {
 
         public SandboxBuilder withInactiveTimeout(int seconds) {
             sandbox.setInactiveTimeout(seconds);
+            return this;
+        }
+
+        public SandboxBuilder withCpuLimit(int cpuLimit) {
+            sandbox.setCpuLimit(cpuLimit);
             return this;
         }
 

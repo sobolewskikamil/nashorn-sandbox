@@ -2,6 +2,7 @@ package sobolee.nashornSandbox;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sobolee.nashornSandbox.exceptions.CpuTimeAbuseException;
 import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
 import sobolee.nashornSandbox.remote.NashornExecutorImpl;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
@@ -95,5 +96,38 @@ public class NashornEvaluatorTest {
         // then
         assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
                 .hasRootCauseInstanceOf(ClassNotFoundException.class);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenExceededCpuTimeOnScript(){
+        // given
+        String script = "while(true) { }\n" +
+                "print(\"Script finished\");";
+        ScriptEvaluationRequest evaluationRequest = new ScriptEvaluationRequest(script, emptyMap());
+
+        // when
+        nashornEvaluator.setCpuLimit(500);
+
+        // then
+        assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
+                .hasRootCauseInstanceOf(CpuTimeAbuseException.class);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenExceededCpuTimeOnFunction() throws RemoteException {
+        // given
+        String script = "function f(a, b){\n" +
+                "\twhile(true) { }\n" +
+                "\treturn a + b;\n" +
+                "}";
+        List<Object> args = List.of(1.0, 2.0);
+        FunctionEvaluationRequest evaluationRequest = new FunctionEvaluationRequest("f", script, args);
+
+        // when
+        nashornEvaluator.setCpuLimit(500);
+
+        // then
+        assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
+                .hasRootCauseInstanceOf(CpuTimeAbuseException.class);
     }
 }

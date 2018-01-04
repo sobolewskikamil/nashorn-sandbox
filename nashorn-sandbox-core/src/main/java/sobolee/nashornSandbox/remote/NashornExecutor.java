@@ -20,4 +20,7 @@ public interface NashornExecutor extends Remote {
     void applyFilter(SandboxClassFilter filter) throws RemoteException;
 
     void applyPermissions(SandboxPermissions permissions) throws RemoteException;
+
+    void setCpuLimit(int limit) throws RemoteException;
+
 }
