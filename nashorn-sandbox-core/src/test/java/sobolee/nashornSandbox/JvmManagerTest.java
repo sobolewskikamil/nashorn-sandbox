@@ -21,7 +21,10 @@ class JvmManagerTest {
 
     @Test
     public void shouldProperlyStartProcess() {
-        // when / then
+        // when
+        jvmManager.start(loadBalancer);
+
+        // then
         List<EvaluationUnit> evaluationUnits = jvmManager.getEvaluationUnits();
         assertThat(evaluationUnits).hasSize(1);
 

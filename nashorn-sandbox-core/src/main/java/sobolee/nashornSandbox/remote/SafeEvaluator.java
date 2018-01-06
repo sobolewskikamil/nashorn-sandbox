@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class SafeEvaluator implements Runnable{
+public class SafeEvaluator implements Runnable, Thread.UncaughtExceptionHandler{
 
     private final ScriptEngine engine;
     private final EvaluationRequest request;
@@ -32,8 +32,8 @@ public class SafeEvaluator implements Runnable{
             r = result.take();
         } catch (InterruptedException ignored) {}
 
-        if(r instanceof Exception){
-            Exception e = (Exception)r;
+        if(r instanceof Throwable){
+            Throwable e = (Throwable)r;
             throw new RemoteException(e.getMessage(), e);
         }
 
@@ -46,11 +46,25 @@ public class SafeEvaluator implements Runnable{
         threadMonitor.setMonitoredThread(thread);
         threadMonitor.setCpuLimit(cpuLimit);
         threadMonitor.setSubject(this);
+        thread.setUncaughtExceptionHandler(this);
         thread.start();
     }
 
     public void notifyDead(){
         Exception e = new CpuTimeAbuseException(String.format("CPU time exceeded: %d ms", cpuLimit));
+        result.add(e);
+    }
+
+    /**
+     * Uncaught exception handler is set to catch any exceptions that are not thrown by specific code,
+     * but by the JVM e.g. OutOfMemoryError
+     *
+     * @param t Thread where the exception was thrown
+     * @param e Thrown exception
+     */
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
         result.add(e);
     }
 
@@ -109,4 +123,5 @@ public class SafeEvaluator implements Runnable{
         }
         return result;
     }
+
 }

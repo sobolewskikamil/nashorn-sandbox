@@ -11,6 +11,10 @@ public class NashornEvaluator {
     private final LoadBalancer loadBalancer;
     private final RmiManager rmiManager;
 
+    private SandboxClassFilter classFilter;
+    private SandboxPermissions permissions;
+    private int cpuLimit = 0;
+
     public NashornEvaluator(int maximumNumberOfInstances, long memoryPerInstance) {
         this(new LoadBalancer(maximumNumberOfInstances, memoryPerInstance), new RmiManager());
     }
@@ -24,10 +28,14 @@ public class NashornEvaluator {
         EvaluationUnit evaluationUnit = loadBalancer.get();
         NashornExecutor executor = getNashornExecutor(evaluationUnit);
         try {
+            applyAll(executor);
             Object result = executor.execute(evaluationRequest);
             evaluationUnit.setEvaluating(false);
             return result;
         } catch (RemoteException e) {
+            if(e.getCause().getClass() == OutOfMemoryError.class){
+                loadBalancer.removeDeadUnit(evaluationUnit);
+            }
             throw new RuntimeException(e);
         }
     }
@@ -36,15 +44,32 @@ public class NashornEvaluator {
         EvaluationUnit evaluationUnit = loadBalancer.get();
         NashornExecutor executor = getNashornExecutor(evaluationUnit);
         try {
+            applyAll(executor);
             Object result = executor.execute(evaluationRequest);
             evaluationUnit.setEvaluating(false);
             return result;
         } catch (RemoteException e) {
+            if(e.getCause().getClass() == OutOfMemoryError.class){
+                loadBalancer.removeDeadUnit(evaluationUnit);
+            }
             throw new RuntimeException(e);
         }
     }
 
+    private void applyAll(NashornExecutor executor) throws RemoteException{
+        if(classFilter != null) {
+            executor.applyFilter(classFilter);
+        }
+        if(permissions != null) {
+            executor.applyPermissions(permissions);
+        }
+
+        executor.setCpuLimit(cpuLimit);
+    }
+
     public void applyFilter(SandboxClassFilter filter){
+        this.classFilter = filter;
+
         for(EvaluationUnit evaluationUnit : loadBalancer.getAllUnits()){
             NashornExecutor executor = getNashornExecutor(evaluationUnit);
             try {
@@ -56,6 +81,8 @@ public class NashornEvaluator {
     }
 
     public void applyPermissions(SandboxPermissions permissions){
+        this.permissions = permissions;
+
         for(EvaluationUnit evaluationUnit : loadBalancer.getAllUnits()){
             NashornExecutor executor = getNashornExecutor(evaluationUnit);
             try {
@@ -67,6 +94,8 @@ public class NashornEvaluator {
     }
 
     public void setCpuLimit(int limit){
+        this.cpuLimit = limit;
+
         for(EvaluationUnit evaluationUnit : loadBalancer.getAllUnits()){
             NashornExecutor executor = getNashornExecutor(evaluationUnit);
             try {

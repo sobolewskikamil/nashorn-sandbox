@@ -35,6 +35,10 @@ public class JvmManager {
         return evaluationUnit;
     }
 
+    public void remove(EvaluationUnit evaluationUnit){
+        evaluationUnits.remove(evaluationUnit);
+    }
+
     private void close() {
         for (EvaluationUnit eu : evaluationUnits) {
             Process process = eu.getProcess();

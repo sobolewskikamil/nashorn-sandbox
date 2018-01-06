@@ -2,6 +2,8 @@ package sobolee.nashornSandbox.loadbalancing;
 
 import sobolee.nashornSandbox.EvaluationUnit;
 import sobolee.nashornSandbox.JvmManager;
+import sobolee.nashornSandbox.SandboxClassFilter;
+import sobolee.nashornSandbox.SandboxPermissions;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,10 +24,6 @@ public class LoadBalancer implements Observer{
     public LoadBalancer(JvmManager jvmManager, int numberOfInstances) {
         this.jvmManager = jvmManager;
         this.numberOfInstances = numberOfInstances;
-
-        if(numberOfInstances > 0) {
-            jvmManager.start(this);
-        }
     }
 
     public EvaluationUnit get() {
@@ -48,6 +46,20 @@ public class LoadBalancer implements Observer{
         return jvmManager.getEvaluationUnits();
     }
 
+    public void removeDeadUnit(EvaluationUnit evaluationUnit){
+        jvmManager.remove(evaluationUnit);
+    }
+
+    @Override
+    public void notifyFreeJvm() {
+        synchronized (LOCK) {
+            Thread thread = threadQueue.peek();
+            if (thread != null) {
+                thread.notify();
+            }
+        }
+    }
+
     private EvaluationUnit waitForAvailableEvaluationUnit(List<EvaluationUnit> evaluationUnits) {
         while (true) {
             synchronized (LOCK) {
@@ -68,13 +80,4 @@ public class LoadBalancer implements Observer{
         }
     }
 
-    @Override
-    public void notifyFreeJvm() {
-        synchronized (LOCK) {
-            Thread thread = threadQueue.peek();
-            if (thread != null) {
-                thread.notify();
-            }
-        }
-    }
 }
