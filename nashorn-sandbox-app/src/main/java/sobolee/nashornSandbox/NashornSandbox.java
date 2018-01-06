@@ -8,14 +8,12 @@ import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static java.util.Objects.requireNonNull;
 
 public class NashornSandbox implements Sandbox {
-    private long memoryLimit = 200;
-    private int cpuLimit;
+    private int memoryLimit = 200;
+    private int cpuLimit = 0;
     private final NashornEvaluator evaluator = new NashornEvaluator(1, memoryLimit);
 
     @Autowired
@@ -53,51 +51,61 @@ public class NashornSandbox implements Sandbox {
         return CompletableFuture.supplyAsync(() -> evaluator.evaluate(evaluationRequest));
     }
 
+    @Override
     public void allowClass(Class<?> aClass) {
         sandboxClassFilter.add(aClass.getName());
         evaluator.applyFilter(sandboxClassFilter);
     }
 
+    @Override
     public void disallowClass(Class<?> aClass) {
         sandboxClassFilter.remove(aClass.getName());
         evaluator.applyFilter(sandboxClassFilter);
     }
 
+    @Override
     public void allowAction(SandboxPermissions.Action action) {
         sandboxPermissions.allowAction(action);
         evaluator.applyPermissions(sandboxPermissions);
     }
 
+    @Override
     public void disallowAction(SandboxPermissions.Action action) {
         sandboxPermissions.disallowAction(action);
         evaluator.applyPermissions(sandboxPermissions);
     }
 
-    private void setInactiveTimeout(int seconds) {
+    @Override
+    public void setInactiveTimeout(int seconds) {
         JvmInstance.setPossibleInactivityTime(seconds);
     }
 
-    private void setMemoryLimit(long memoryLimit) {
+    public void setMemoryLimit(int memoryLimit) {
         this.memoryLimit = memoryLimit;
     }
 
-    private void setCpuLimit(int cpuLimit){
+    @Override
+    public void setCpuLimit(int cpuLimit){
         this.cpuLimit = cpuLimit;
+        evaluator.setCpuLimit(cpuLimit);
     }
 
     public static class NashornSandboxBuilder implements SandboxBuilder {
         private final NashornSandbox sandbox = new NashornSandbox();
 
-        public SandboxBuilder withMemoryLimit(long memoryLimit) {
+        @Override
+        public SandboxBuilder withMemoryLimit(int memoryLimit) {
             sandbox.setMemoryLimit(memoryLimit);
             return this;
         }
 
+        @Override
         public SandboxBuilder withInactiveTimeout(int seconds) {
             sandbox.setInactiveTimeout(seconds);
             return this;
         }
 
+        @Override
         public SandboxBuilder withCpuLimit(int cpuLimit) {
             sandbox.setCpuLimit(cpuLimit);
             return this;

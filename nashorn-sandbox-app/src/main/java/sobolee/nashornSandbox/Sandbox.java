@@ -18,8 +18,15 @@ public interface Sandbox {
 
     void disallowAction(SandboxPermissions.Action action);
 
+    void setInactiveTimeout(int seconds);
+
+    void setCpuLimit(int cpuLimit);
+
     interface SandboxBuilder {
 
         Sandbox build();
+        SandboxBuilder withInactiveTimeout(int seconds);
+        SandboxBuilder withMemoryLimit(int memoryLimit);
+        SandboxBuilder withCpuLimit(int cpuLimit);
     }
 }
