@@ -22,6 +22,10 @@ public class LoadBalancer implements Observer{
     public LoadBalancer(JvmManager jvmManager, int numberOfInstances) {
         this.jvmManager = jvmManager;
         this.numberOfInstances = numberOfInstances;
+
+        if(numberOfInstances > 0) {
+            jvmManager.start(this);
+        }
     }
 
     public EvaluationUnit get() {
