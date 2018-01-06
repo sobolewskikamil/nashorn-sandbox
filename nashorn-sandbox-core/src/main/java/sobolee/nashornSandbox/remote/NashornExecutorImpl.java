@@ -8,7 +8,8 @@ import sobolee.nashornSandbox.requests.EvaluationRequest;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
-import javax.script.*;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.locks.Lock;
@@ -21,13 +22,13 @@ public class NashornExecutorImpl extends UnicastRemoteObject implements NashornE
     private static final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
     private DateTime timeOfLastRequest;
     private int cpuLimit;
-    private SandboxClassFilter filter;
+    private SandboxClassFilter filter = new SandboxClassFilter();
     private SandboxPermissions permissions;
     private final Lock LOCK = new ReentrantLock();
 
     public NashornExecutorImpl() throws RemoteException {
         super();
-        engine = factory.getScriptEngine();
+        engine = factory.getScriptEngine(filter);
     }
 
     @Override

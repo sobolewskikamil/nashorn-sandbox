@@ -69,7 +69,7 @@ public class SafeEvaluator implements Runnable{
                 object = execute((ScriptEvaluationRequest)request);
             }
             result.add(object);
-        } catch (ScriptException|NoSuchMethodException e) {
+        } catch (Exception e) {
             result.add(e);
         }
     }

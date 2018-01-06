@@ -1,10 +1,12 @@
 package sobolee.nashornSandbox;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -14,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 class SimpleJavaScriptExecutionTest {
-    private static Sandbox sandbox;
+    private Sandbox sandbox;
 
-    @BeforeAll
-    public static void setUpEnvironment() {
+    @BeforeEach
+    public void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
                 .withInactiveTimeout(1)
                 .build();
@@ -48,6 +50,24 @@ class SimpleJavaScriptExecutionTest {
         // then
         assertThat(result.get()).isEqualTo("test");
     }
+
+    @Test
+    public void shouldAccessJavaClass() throws ExecutionException, InterruptedException {
+        // given
+        String script = "var ArrayList = Java.type(\"java.util.ArrayList\");\n" +
+                "var defaultSizeArrayList = new ArrayList;\n" +
+                "defaultSizeArrayList";
+        ArrayList output = new ArrayList();
+
+        // when
+        sandbox.allowClass(java.util.ArrayList.class);
+        CompletableFuture<Object> result = sandbox.evaluate(script, emptyMap());
+
+        // then
+        assertThat(result.get()).isEqualTo(output);
+    }
+
+    // todo create test for permission access
 
     @Configuration
     static class ContextConfiguration {
