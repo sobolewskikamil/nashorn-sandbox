@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import static java.lang.String.format;
+
 public class SafeEvaluator implements Runnable, Thread.UncaughtExceptionHandler{
 
     private final ScriptEngine engine;
@@ -42,7 +44,7 @@ public class SafeEvaluator implements Runnable, Thread.UncaughtExceptionHandler{
 
     public void evaluate(){
         Thread thread = new Thread(this);
-        threadMonitor = ThreadMonitor.get();
+        threadMonitor = new ThreadMonitor();
         threadMonitor.setMonitoredThread(thread);
         threadMonitor.setCpuLimit(cpuLimit);
         threadMonitor.setSubject(this);
@@ -51,7 +53,7 @@ public class SafeEvaluator implements Runnable, Thread.UncaughtExceptionHandler{
     }
 
     public void notifyDead(){
-        Exception e = new CpuTimeAbuseException(String.format("CPU time exceeded: %d ms", cpuLimit));
+        Exception e = new CpuTimeAbuseException(format("CPU time exceeded: %d ms", cpuLimit));
         result.add(e);
     }
 

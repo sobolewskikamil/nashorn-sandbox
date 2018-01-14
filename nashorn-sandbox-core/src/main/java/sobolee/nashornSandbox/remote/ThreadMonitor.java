@@ -6,8 +6,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadMonitor implements Runnable{
-    private static ThreadMonitor threadMonitor;
-    private static final Lock LOCK = new ReentrantLock();
+    /*private static ThreadMonitor threadMonitor;
+    private static final Lock LOCK = new ReentrantLock();*/
     private Thread monitoredThread;
     private long cpuLimit;
     private long startCpuTime;
@@ -17,14 +17,14 @@ public class ThreadMonitor implements Runnable{
     private SafeEvaluator safeEvaluator;
 
 
-    public static ThreadMonitor get(){
+    /*public static ThreadMonitor get(){
         synchronized (LOCK) {
             if (threadMonitor == null) {
                 threadMonitor = new ThreadMonitor();
             }
         }
         return threadMonitor;
-    }
+    }*/
 
 
     @Override
@@ -47,7 +47,7 @@ public class ThreadMonitor implements Runnable{
     public void startMonitoring(){
         hasStopped = false;
         startCpuTime = bean.getThreadCpuTime(monitoredThread.getId());
-        new Thread(threadMonitor).start();
+        new Thread(this).start();
     }
 
     public void stopMonitoring(){
@@ -55,9 +55,7 @@ public class ThreadMonitor implements Runnable{
     }
 
     public void setMonitoredThread(Thread monitoredThread) {
-        synchronized (LOCK) {
-            this.monitoredThread = monitoredThread;
-        }
+        this.monitoredThread = monitoredThread;
     }
 
     public void setCpuLimit(int cpuLimit) {

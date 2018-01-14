@@ -1,6 +1,6 @@
 package sobolee.nashornSandbox.exceptions;
 
-public class JavaClassAccessException extends RuntimeException {
+public class JavaClassAccessException extends Exception {
 
     public JavaClassAccessException(String msg) {
         super(msg);

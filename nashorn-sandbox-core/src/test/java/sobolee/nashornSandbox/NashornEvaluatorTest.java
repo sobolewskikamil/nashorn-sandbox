@@ -3,6 +3,7 @@ package sobolee.nashornSandbox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sobolee.nashornSandbox.exceptions.CpuTimeAbuseException;
+import sobolee.nashornSandbox.exceptions.JavaClassAccessException;
 import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
 import sobolee.nashornSandbox.remote.NashornExecutorImpl;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
@@ -78,7 +79,7 @@ public class NashornEvaluatorTest {
 
         // then
         assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
-                .hasRootCauseInstanceOf(ClassNotFoundException.class);
+                .hasRootCauseInstanceOf(JavaClassAccessException.class);
     }
 
     @Test
