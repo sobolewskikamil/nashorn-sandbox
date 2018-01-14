@@ -66,23 +66,6 @@ public class NashornEvaluatorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenPerformingDisabledOperation(){
-        // given
-        SandboxPermissions permissions = new SandboxPermissions();
-        String script = "print(\"test\");";
-        ScriptEvaluationRequest evaluationRequest = new ScriptEvaluationRequest(script, emptyMap());
-
-        // when
-        nashornEvaluator.applyPermissions(permissions);
-
-        // then
-        // todo uncomment assertion after fixing permissions
-        /*assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
-                .hasRootCauseInstanceOf(Exception.class);*/
-        assertThat(true);
-    }
-
-    @Test
     public void shouldThrowExceptionWhenUsingDisabledClass(){
         // given
         String script = "var MyJavaClass = Java.type('sobolee.nashornSandbox.NashornEvaluator');\n" +

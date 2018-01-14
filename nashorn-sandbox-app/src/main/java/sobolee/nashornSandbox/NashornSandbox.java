@@ -1,6 +1,5 @@
 package sobolee.nashornSandbox;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import sobolee.nashornSandbox.remote.JvmInstance;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
@@ -16,11 +15,7 @@ public class NashornSandbox implements Sandbox {
     private int cpuLimit = 0;
     private final NashornEvaluator evaluator = new NashornEvaluator(1, memoryLimit);
 
-    @Autowired
     private SandboxClassFilter sandboxClassFilter = new SandboxClassFilter();
-
-    @Autowired
-    private SandboxPermissions sandboxPermissions = new SandboxPermissions();
 
     private NashornSandbox() {
     }
@@ -64,18 +59,6 @@ public class NashornSandbox implements Sandbox {
     }
 
     @Override
-    public void allowAction(SandboxPermissions.Action action) {
-        sandboxPermissions.allowAction(action);
-        evaluator.applyPermissions(sandboxPermissions);
-    }
-
-    @Override
-    public void disallowAction(SandboxPermissions.Action action) {
-        sandboxPermissions.disallowAction(action);
-        evaluator.applyPermissions(sandboxPermissions);
-    }
-
-    @Override
     public void setInactiveTimeout(int seconds) {
         JvmInstance.setPossibleInactivityTime(seconds);
     }
@@ -91,7 +74,13 @@ public class NashornSandbox implements Sandbox {
     }
 
     public static class NashornSandboxBuilder implements SandboxBuilder {
-        private final NashornSandbox sandbox = new NashornSandbox();
+        private NashornSandbox sandbox;
+
+        @Override
+        public SandboxBuilder createNew(){
+            sandbox = new NashornSandbox();
+            return this;
+        }
 
         @Override
         public SandboxBuilder withMemoryLimit(int memoryLimit) {
@@ -112,7 +101,7 @@ public class NashornSandbox implements Sandbox {
         }
 
         @Override
-        public Sandbox build() {
+        public Sandbox get() {
             return sandbox;
         }
     }

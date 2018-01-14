@@ -44,8 +44,7 @@ public class RmiManager {
     private void close() {
         try {
             unexportObject(REGISTRY, true);
-        } catch (NoSuchObjectException e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchObjectException ignored) {
         }
     }
 }

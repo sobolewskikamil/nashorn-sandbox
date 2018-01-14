@@ -1,13 +1,11 @@
 package sobolee.nashornSandbox;
 
 import jdk.nashorn.api.scripting.ClassFilter;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
 public class SandboxClassFilter implements ClassFilter, Serializable {
     private final Set<String> allowedClasses = new HashSet<>();
 

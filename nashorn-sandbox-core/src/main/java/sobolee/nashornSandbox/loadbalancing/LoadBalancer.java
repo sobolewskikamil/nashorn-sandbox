@@ -2,8 +2,6 @@ package sobolee.nashornSandbox.loadbalancing;
 
 import sobolee.nashornSandbox.EvaluationUnit;
 import sobolee.nashornSandbox.JvmManager;
-import sobolee.nashornSandbox.SandboxClassFilter;
-import sobolee.nashornSandbox.SandboxPermissions;
 
 import java.util.LinkedList;
 import java.util.List;

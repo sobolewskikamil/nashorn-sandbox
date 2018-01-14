@@ -14,17 +14,14 @@ public interface Sandbox {
 
     void disallowClass(Class<?> aClass);
 
-    void allowAction(SandboxPermissions.Action action);
-
-    void disallowAction(SandboxPermissions.Action action);
-
     void setInactiveTimeout(int seconds);
 
     void setCpuLimit(int cpuLimit);
 
     interface SandboxBuilder {
 
-        Sandbox build();
+        Sandbox get();
+        SandboxBuilder createNew();
         SandboxBuilder withInactiveTimeout(int seconds);
         SandboxBuilder withMemoryLimit(int memoryLimit);
         SandboxBuilder withCpuLimit(int cpuLimit);

@@ -12,7 +12,6 @@ public class NashornEvaluator {
     private final RmiManager rmiManager;
 
     private SandboxClassFilter classFilter;
-    private SandboxPermissions permissions;
     private int cpuLimit = 0;
 
     public NashornEvaluator(int maximumNumberOfInstances, long memoryPerInstance) {
@@ -60,9 +59,6 @@ public class NashornEvaluator {
         if(classFilter != null) {
             executor.applyFilter(classFilter);
         }
-        if(permissions != null) {
-            executor.applyPermissions(permissions);
-        }
 
         executor.setCpuLimit(cpuLimit);
     }
@@ -75,19 +71,6 @@ public class NashornEvaluator {
             try {
                 executor.applyFilter(filter);
             } catch (RemoteException e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void applyPermissions(SandboxPermissions permissions){
-        this.permissions = permissions;
-
-        for(EvaluationUnit evaluationUnit : loadBalancer.getAllUnits()){
-            NashornExecutor executor = getNashornExecutor(evaluationUnit);
-            try {
-                executor.applyPermissions(permissions);
-            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }

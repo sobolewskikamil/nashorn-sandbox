@@ -2,7 +2,6 @@ package sobolee.nashornSandbox.remote;
 
 import org.joda.time.DateTime;
 import sobolee.nashornSandbox.SandboxClassFilter;
-import sobolee.nashornSandbox.SandboxPermissions;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
@@ -18,8 +17,6 @@ public interface NashornExecutor extends Remote {
     DateTime getTimeOfLastRequest() throws RemoteException;
 
     void applyFilter(SandboxClassFilter filter) throws RemoteException;
-
-    void applyPermissions(SandboxPermissions permissions) throws RemoteException;
 
     void setCpuLimit(int limit) throws RemoteException;
 

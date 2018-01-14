@@ -2,11 +2,8 @@ package sobolee.nashornSandbox;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -14,15 +11,15 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringJUnitConfig
 class SimpleJavaScriptExecutionTest {
     private Sandbox sandbox;
 
     @BeforeEach
     public void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
+                .createNew()
                 .withInactiveTimeout(1)
-                .build();
+                .get();
     }
 
     @Test
@@ -67,17 +64,4 @@ class SimpleJavaScriptExecutionTest {
         assertThat(result.get()).isEqualTo(output);
     }
 
-    // todo create test for permission access
-
-    @Configuration
-    static class ContextConfiguration {
-
-        SandboxClassFilter sandboxClassFilter() {
-            return new SandboxClassFilter();
-        }
-
-        SandboxPermissions sandboxPermissions() {
-            return new SandboxPermissions();
-        }
-    }
 }
