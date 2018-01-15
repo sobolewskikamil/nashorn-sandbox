@@ -2,6 +2,7 @@ package sobolee.nashornSandbox;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sobolee.nashornSandbox.evaluator.SimpleNashornEvaluator;
 import sobolee.nashornSandbox.exceptions.CpuTimeAbuseException;
 import sobolee.nashornSandbox.exceptions.JavaClassAccessException;
 import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class NashornEvaluatorTest {
-    private NashornEvaluator nashornEvaluator;
+    private SimpleNashornEvaluator nashornEvaluator;
 
     @BeforeEach
     public void setUp() throws RemoteException {
@@ -34,7 +35,7 @@ public class NashornEvaluatorTest {
         RmiManager rmiManagerMock = mock(RmiManager.class);
         when(rmiManagerMock.getExecutor("test")).thenReturn(new NashornExecutorImpl());
 
-        nashornEvaluator = new NashornEvaluator(balancerMock, rmiManagerMock);
+        nashornEvaluator = new SimpleNashornEvaluator(balancerMock, rmiManagerMock);
     }
 
     @Test
@@ -69,7 +70,7 @@ public class NashornEvaluatorTest {
     @Test
     public void shouldThrowExceptionWhenUsingDisabledClass(){
         // given
-        String script = "var MyJavaClass = Java.type('sobolee.nashornSandbox.NashornEvaluator');\n" +
+        String script = "var MyJavaClass = Java.type('sobolee.nashornSandbox.sobolee.nashornSandbox.evaluator.NashornEvaluator');\n" +
                 "var result = MyJavaClass.evaluate('test');";
         ScriptEvaluationRequest evaluationRequest = new ScriptEvaluationRequest(script, emptyMap());
         SandboxClassFilter filter = new SandboxClassFilter();
@@ -79,7 +80,7 @@ public class NashornEvaluatorTest {
 
         // then
         assertThatThrownBy(() -> nashornEvaluator.evaluate(evaluationRequest))
-                .hasRootCauseInstanceOf(JavaClassAccessException.class);
+                .hasRootCauseInstanceOf(ClassNotFoundException.class);
     }
 
     @Test

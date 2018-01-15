@@ -1,5 +1,9 @@
-package sobolee.nashornSandbox;
+package sobolee.nashornSandbox.evaluator;
 
+import sobolee.nashornSandbox.EvaluationUnit;
+import sobolee.nashornSandbox.RmiManager;
+import sobolee.nashornSandbox.SandboxClassFilter;
+import sobolee.nashornSandbox.evaluator.NashornEvaluator;
 import sobolee.nashornSandbox.loadbalancing.LoadBalancer;
 import sobolee.nashornSandbox.remote.NashornExecutor;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
@@ -7,18 +11,18 @@ import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
 import java.rmi.RemoteException;
 
-public class NashornEvaluator {
+public class SimpleNashornEvaluator implements NashornEvaluator {
     private final LoadBalancer loadBalancer;
     private final RmiManager rmiManager;
 
     private SandboxClassFilter classFilter;
     private int cpuLimit = 0;
 
-    public NashornEvaluator(int maximumNumberOfInstances, long memoryPerInstance) {
+    public SimpleNashornEvaluator(int maximumNumberOfInstances, long memoryPerInstance) {
         this(new LoadBalancer(maximumNumberOfInstances, memoryPerInstance), new RmiManager());
     }
 
-    public NashornEvaluator(LoadBalancer loadBalancer, RmiManager rmiManager) {
+    public SimpleNashornEvaluator(LoadBalancer loadBalancer, RmiManager rmiManager) {
         this.loadBalancer = loadBalancer;
         this.rmiManager = rmiManager;
     }

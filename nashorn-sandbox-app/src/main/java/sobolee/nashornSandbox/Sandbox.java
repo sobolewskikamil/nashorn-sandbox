@@ -25,5 +25,6 @@ public interface Sandbox {
         SandboxBuilder withInactiveTimeout(int seconds);
         SandboxBuilder withMemoryLimit(int memoryLimit);
         SandboxBuilder withCpuLimit(int cpuLimit);
+        SandboxBuilder withTimeMeasure();
     }
 }

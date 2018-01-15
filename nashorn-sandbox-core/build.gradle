@@ -4,5 +4,8 @@ version '1.0-SNAPSHOT'
 dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
 
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
+
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.12.0'
 }

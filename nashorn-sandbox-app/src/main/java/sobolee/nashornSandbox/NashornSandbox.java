@@ -1,5 +1,8 @@
 package sobolee.nashornSandbox;
 
+import sobolee.nashornSandbox.evaluator.MeasuredNashornEvaluator;
+import sobolee.nashornSandbox.evaluator.NashornEvaluator;
+import sobolee.nashornSandbox.evaluator.SimpleNashornEvaluator;
 import sobolee.nashornSandbox.remote.JvmInstance;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
@@ -13,7 +16,7 @@ import static java.util.Objects.requireNonNull;
 public class NashornSandbox implements Sandbox {
     private int memoryLimit = 200;
     private int cpuLimit = 0;
-    private final NashornEvaluator evaluator = new NashornEvaluator(1, memoryLimit);
+    private NashornEvaluator evaluator = new SimpleNashornEvaluator(1, memoryLimit);
 
     private SandboxClassFilter sandboxClassFilter = new SandboxClassFilter();
 
@@ -97,6 +100,12 @@ public class NashornSandbox implements Sandbox {
         @Override
         public SandboxBuilder withCpuLimit(int cpuLimit) {
             sandbox.setCpuLimit(cpuLimit);
+            return this;
+        }
+
+        @Override
+        public SandboxBuilder withTimeMeasure() {
+            sandbox.evaluator = new MeasuredNashornEvaluator(sandbox.evaluator);
             return this;
         }
 
