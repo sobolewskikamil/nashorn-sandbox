@@ -21,7 +21,7 @@ class ExceptionTest {
     }
 
     @Test
-    void shouldThrowOutOfMemoryErrorWhenAllocatingMemoryInInfiniteLoop() {
+    void shouldThrowOutOfMemoryErrorWhenAllocatingMemoryInInfiniteLoop() throws InterruptedException, ExecutionException{
         // given
         String script = "var array = [];" +
                 "while(true) {" +
