@@ -1,6 +1,6 @@
 package sobolee.nashornSandbox;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sobolee.nashornSandbox.exceptions.CpuTimeAbuseException;
 
@@ -10,19 +10,16 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class ExceptionTest {
-    private Sandbox sandbox;
+    private static Sandbox sandbox;
 
-    @BeforeEach
-    void setUpEnvironment() {
+    @BeforeAll
+    static void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
                 .withInactiveTimeout(1)
                 .withMemoryLimit(50)
                 .build();
     }
 
-    /**
-     *
-     */
     @Test
     void shouldThrowOutOfMemoryErrorWhenAllocatingMemoryInInfiniteLoop() {
         // given

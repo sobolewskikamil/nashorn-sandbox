@@ -1,6 +1,6 @@
 package sobolee.nashornSandbox;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -13,10 +13,10 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JavaScriptExecutionTest {
-    private Sandbox sandbox;
+    private static Sandbox sandbox;
 
-    @BeforeEach
-    void setUpEnvironment() {
+    @BeforeAll
+    static void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
                 .withInactiveTimeout(1)
                 .withTimeMeasure()
