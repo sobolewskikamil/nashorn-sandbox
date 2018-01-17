@@ -7,26 +7,24 @@ import sobolee.nashornSandbox.exceptions.CpuTimeAbuseException;
 import java.util.concurrent.ExecutionException;
 
 import static java.util.Collections.emptyMap;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-public class ExceptionTest {
+class ExceptionTest {
     private Sandbox sandbox;
 
     @BeforeEach
-    public void setUpEnvironment() {
+    void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
-                .createNew()
                 .withInactiveTimeout(1)
                 .withMemoryLimit(50)
-                .get();
+                .build();
     }
 
     /**
      *
      */
     @Test
-    public void shouldThrowOutOfMemoryErrorWhenAllocatingMemoryInInfiniteLoop() {
+    void shouldThrowOutOfMemoryErrorWhenAllocatingMemoryInInfiniteLoop() {
         // given
         String script = "var array = [];" +
                 "while(true) {" +
@@ -39,7 +37,7 @@ public class ExceptionTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenExceededCpuTime() throws InterruptedException, ExecutionException{
+    void shouldThrowExceptionWhenExceededCpuTime() throws InterruptedException, ExecutionException {
         // given
         String script = "while(true) { }\n" +
                 "print(\"Script finished\");";
@@ -53,7 +51,7 @@ public class ExceptionTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenUsingDisabledClass(){
+    void shouldThrowExceptionWhenUsingDisabledClass() {
         // given
         String script = "var ArrayList = Java.type(\"java.util.ArrayList\");\n" +
                 "var defaultSizeArrayList = new ArrayList;\n" +
@@ -63,5 +61,4 @@ public class ExceptionTest {
         assertThatThrownBy(() -> sandbox.evaluate(script, emptyMap()).get())
                 .hasRootCauseInstanceOf(ClassNotFoundException.class);
     }
-
 }

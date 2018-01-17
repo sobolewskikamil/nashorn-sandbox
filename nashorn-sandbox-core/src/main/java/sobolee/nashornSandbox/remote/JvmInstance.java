@@ -33,7 +33,7 @@ public class JvmInstance {
             registry = getRegistry(1099);
             nashornExecutor = new NashornExecutorImpl();
             registry.rebind(id, nashornExecutor);
-        } catch (RemoteException e) {
+        } catch (RemoteException ignored) {
         }
     }
 

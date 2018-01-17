@@ -1,5 +1,6 @@
 package sobolee.nashornSandbox;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -10,21 +11,13 @@ public interface Sandbox {
 
     CompletableFuture<Object> invokeFunction(String function, String script, List<Object> args);
 
-    void allowClass(Class<?> aClass);
+    void allowClasses(Collection<Class<?>> classes);
 
-    void disallowClass(Class<?> aClass);
+    void disallowClasses(Collection<Class<?>> classes);
 
     void setInactiveTimeout(int seconds);
 
     void setCpuLimit(int cpuLimit);
 
-    interface SandboxBuilder {
-
-        Sandbox get();
-        SandboxBuilder createNew();
-        SandboxBuilder withInactiveTimeout(int seconds);
-        SandboxBuilder withMemoryLimit(int memoryLimit);
-        SandboxBuilder withCpuLimit(int cpuLimit);
-        SandboxBuilder withTimeMeasure();
-    }
+    void setMemoryLimit(int memoryLimit);
 }

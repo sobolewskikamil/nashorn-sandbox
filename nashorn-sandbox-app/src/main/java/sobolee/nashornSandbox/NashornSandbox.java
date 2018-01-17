@@ -1,21 +1,20 @@
 package sobolee.nashornSandbox;
 
-import sobolee.nashornSandbox.evaluator.MeasuredNashornEvaluator;
 import sobolee.nashornSandbox.evaluator.NashornEvaluator;
 import sobolee.nashornSandbox.evaluator.SimpleNashornEvaluator;
-import sobolee.nashornSandbox.remote.JvmInstance;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.Objects.requireNonNull;
+import static sobolee.nashornSandbox.remote.JvmInstance.setPossibleInactivityTime;
 
 public class NashornSandbox implements Sandbox {
     private int memoryLimit = 200;
-    private int cpuLimit = 0;
     private NashornEvaluator evaluator = new SimpleNashornEvaluator(1, memoryLimit);
 
     private SandboxClassFilter sandboxClassFilter = new SandboxClassFilter();
@@ -50,40 +49,38 @@ public class NashornSandbox implements Sandbox {
     }
 
     @Override
-    public void allowClass(Class<?> aClass) {
-        sandboxClassFilter.add(aClass.getName());
+    public void allowClasses(Collection<Class<?>> classes) {
+        classes.stream()
+                .map(Class::getName)
+                .forEach(c -> sandboxClassFilter.add(c));
         evaluator.applyFilter(sandboxClassFilter);
     }
 
     @Override
-    public void disallowClass(Class<?> aClass) {
-        sandboxClassFilter.remove(aClass.getName());
+    public void disallowClasses(Collection<Class<?>> classes) {
+        classes.stream()
+                .map(Class::getName)
+                .forEach(c -> sandboxClassFilter.remove(c));
         evaluator.applyFilter(sandboxClassFilter);
     }
 
     @Override
     public void setInactiveTimeout(int seconds) {
-        JvmInstance.setPossibleInactivityTime(seconds);
+        setPossibleInactivityTime(seconds);
     }
 
+    @Override
     public void setMemoryLimit(int memoryLimit) {
         this.memoryLimit = memoryLimit;
     }
 
     @Override
-    public void setCpuLimit(int cpuLimit){
-        this.cpuLimit = cpuLimit;
+    public void setCpuLimit(int cpuLimit) {
         evaluator.setCpuLimit(cpuLimit);
     }
 
     public static class NashornSandboxBuilder implements SandboxBuilder {
-        private NashornSandbox sandbox;
-
-        @Override
-        public SandboxBuilder createNew(){
-            sandbox = new NashornSandbox();
-            return this;
-        }
+        private final NashornSandbox sandbox = new NashornSandbox();
 
         @Override
         public SandboxBuilder withMemoryLimit(int memoryLimit) {
@@ -104,13 +101,19 @@ public class NashornSandbox implements Sandbox {
         }
 
         @Override
-        public SandboxBuilder withTimeMeasure() {
-            sandbox.evaluator = new MeasuredNashornEvaluator(sandbox.evaluator);
+        public SandboxBuilder withAllowedClasses(List<Class<?>> classes) {
+            sandbox.allowClasses(classes);
             return this;
         }
 
         @Override
-        public Sandbox get() {
+        public SandboxBuilder withDisallowedClasses(List<Class<?>> classes) {
+            sandbox.disallowClasses(classes);
+            return this;
+        }
+
+        @Override
+        public Sandbox build() {
             return sandbox;
         }
     }

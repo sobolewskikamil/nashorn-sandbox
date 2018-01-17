@@ -2,12 +2,8 @@ package sobolee.nashornSandbox.remote;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadMonitor implements Runnable{
-    /*private static ThreadMonitor threadMonitor;
-    private static final Lock LOCK = new ReentrantLock();*/
     private Thread monitoredThread;
     private long cpuLimit;
     private long startCpuTime;
@@ -15,17 +11,6 @@ public class ThreadMonitor implements Runnable{
 
     private boolean hasStopped;
     private SafeEvaluator safeEvaluator;
-
-
-    /*public static ThreadMonitor get(){
-        synchronized (LOCK) {
-            if (threadMonitor == null) {
-                threadMonitor = new ThreadMonitor();
-            }
-        }
-        return threadMonitor;
-    }*/
-
 
     @Override
     public void run() {

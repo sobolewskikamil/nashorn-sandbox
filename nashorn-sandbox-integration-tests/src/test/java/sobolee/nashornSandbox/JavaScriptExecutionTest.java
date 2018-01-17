@@ -9,21 +9,21 @@ import java.util.concurrent.ExecutionException;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SimpleJavaScriptExecutionTest {
+class JavaScriptExecutionTest {
     private Sandbox sandbox;
 
     @BeforeEach
-    public void setUpEnvironment() {
+    void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
-                .createNew()
                 .withInactiveTimeout(1)
-                .get();
+                .build();
     }
 
     @Test
-    public void shouldProperlyEvaluateJavaScript() throws ExecutionException, InterruptedException {
+    void shouldProperlyEvaluateJavaScript() throws ExecutionException, InterruptedException {
         // given
         String script = "result = \"test\";";
 
@@ -35,9 +35,10 @@ class SimpleJavaScriptExecutionTest {
     }
 
     @Test
-    public void shouldProperlyInvokeFunction() throws ExecutionException, InterruptedException {
+    void shouldProperlyInvokeFunction() throws ExecutionException, InterruptedException {
         // given
-        String script = "function f() {" +
+        String script = "" +
+                "function f() {" +
                 "   return \"test\"; " +
                 "}";
 
@@ -49,19 +50,19 @@ class SimpleJavaScriptExecutionTest {
     }
 
     @Test
-    public void shouldAccessJavaClass() throws ExecutionException, InterruptedException {
+    void shouldAccessJavaClass() throws ExecutionException, InterruptedException {
         // given
-        String script = "var ArrayList = Java.type(\"java.util.ArrayList\");\n" +
+        String script = "" +
+                "var ArrayList = Java.type(\"java.util.ArrayList\");\n" +
                 "var defaultSizeArrayList = new ArrayList;\n" +
                 "defaultSizeArrayList";
         ArrayList output = new ArrayList();
 
         // when
-        sandbox.allowClass(java.util.ArrayList.class);
+        sandbox.allowClasses(singletonList(java.util.ArrayList.class));
         CompletableFuture<Object> result = sandbox.evaluate(script, emptyMap());
 
         // then
         assertThat(result.get()).isEqualTo(output);
     }
-
 }

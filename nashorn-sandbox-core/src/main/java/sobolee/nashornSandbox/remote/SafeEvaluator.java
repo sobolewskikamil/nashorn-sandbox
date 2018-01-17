@@ -15,7 +15,6 @@ import java.util.concurrent.BlockingQueue;
 import static java.lang.String.format;
 
 public class SafeEvaluator implements Runnable, Thread.UncaughtExceptionHandler{
-
     private final ScriptEngine engine;
     private final EvaluationRequest request;
     private final int cpuLimit;
