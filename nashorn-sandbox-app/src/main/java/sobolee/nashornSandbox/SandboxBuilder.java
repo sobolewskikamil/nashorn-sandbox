@@ -14,5 +14,7 @@ public interface SandboxBuilder {
 
     SandboxBuilder withDisallowedClasses(List<Class<?>> classes);
 
+    SandboxBuilder withTimeMeasure();
+
     Sandbox build();
 }

@@ -1,20 +1,17 @@
 package sobolee.nashornSandbox.evaluator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sobolee.nashornSandbox.SandboxClassFilter;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
 import sobolee.nashornSandbox.requests.ScriptEvaluationRequest;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import java.io.File;
-import java.net.MalformedURLException;
 
 import static java.lang.String.format;
 
 public class MeasuredNashornEvaluator extends AbstractNashornEvaluatorDecorator {
     private Logger logger = LogManager.getLogger();
 
-    public MeasuredNashornEvaluator(NashornEvaluator evaluator){
+    public MeasuredNashornEvaluator(NashornEvaluator evaluator) {
         super(evaluator);
     }
 
@@ -23,7 +20,7 @@ public class MeasuredNashornEvaluator extends AbstractNashornEvaluatorDecorator 
         long start = System.currentTimeMillis();
         Object result = evaluator.evaluate(evaluationRequest);
         long stop = System.currentTimeMillis();
-        logger.info(format("Evaluation time: %d ms", stop-start));
+        logger.info(format("Evaluation time: %d ms", stop - start));
         return result;
     }
 
@@ -32,7 +29,7 @@ public class MeasuredNashornEvaluator extends AbstractNashornEvaluatorDecorator 
         long start = System.currentTimeMillis();
         Object result = evaluator.evaluate(evaluationRequest);
         long stop = System.currentTimeMillis();
-        logger.info(format("Evaluation time: %d ms", stop-start));
+        logger.info(format("Evaluation time: %d ms", stop - start));
         return result;
     }
 

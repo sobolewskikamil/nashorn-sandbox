@@ -19,6 +19,7 @@ class JavaScriptExecutionTest {
     void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
                 .withInactiveTimeout(1)
+                .withTimeMeasure()
                 .build();
     }
 

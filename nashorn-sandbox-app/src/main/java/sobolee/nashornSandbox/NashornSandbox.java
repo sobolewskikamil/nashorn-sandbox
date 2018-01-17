@@ -1,5 +1,6 @@
 package sobolee.nashornSandbox;
 
+import sobolee.nashornSandbox.evaluator.MeasuredNashornEvaluator;
 import sobolee.nashornSandbox.evaluator.NashornEvaluator;
 import sobolee.nashornSandbox.evaluator.SimpleNashornEvaluator;
 import sobolee.nashornSandbox.requests.FunctionEvaluationRequest;
@@ -109,6 +110,12 @@ public class NashornSandbox implements Sandbox {
         @Override
         public SandboxBuilder withDisallowedClasses(List<Class<?>> classes) {
             sandbox.disallowClasses(classes);
+            return this;
+        }
+
+        @Override
+        public SandboxBuilder withTimeMeasure() {
+            sandbox.evaluator = new MeasuredNashornEvaluator(sandbox.evaluator);
             return this;
         }
 
