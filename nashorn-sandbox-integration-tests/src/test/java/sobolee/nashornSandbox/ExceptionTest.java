@@ -16,7 +16,7 @@ class ExceptionTest {
     static void setUpEnvironment() {
         sandbox = new NashornSandbox.NashornSandboxBuilder()
                 .withInactiveTimeout(1)
-                .withMemoryLimit(50)
+                .withMemoryLimit(500)
                 .build();
     }
 
