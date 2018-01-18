@@ -42,4 +42,9 @@ public class MeasuredNashornEvaluator extends AbstractNashornEvaluatorDecorator 
     public void setCpuLimit(int limit) {
         evaluator.setCpuLimit(limit);
     }
+
+    @Override
+    public void setMaxNumberOfInstances(int number) {
+        evaluator.setMaxNumberOfInstances(number);
+    }
 }

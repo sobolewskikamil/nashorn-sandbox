@@ -16,5 +16,7 @@ public interface SandboxBuilder {
 
     SandboxBuilder withTimeMeasure();
 
+    SandboxBuilder withMaxNumberOfInstances(int number);
+
     Sandbox build();
 }

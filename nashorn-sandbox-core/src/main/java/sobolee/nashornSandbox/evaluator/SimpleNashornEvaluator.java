@@ -97,6 +97,11 @@ public class SimpleNashornEvaluator implements NashornEvaluator {
         }
     }
 
+    @Override
+    public void setMaxNumberOfInstances(int number) {
+        loadBalancer.setNumberOfInstances(number);
+    }
+
     private NashornExecutor getNashornExecutor(EvaluationUnit evaluationUnit) {
         String id = evaluationUnit.getId();
         return rmiManager.getExecutor(id);

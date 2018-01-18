@@ -20,4 +20,6 @@ public interface Sandbox {
     void setCpuLimit(int cpuLimit);
 
     void setMemoryLimit(int memoryLimit);
+
+    void setMaxNumberOfInstances(int number);
 }

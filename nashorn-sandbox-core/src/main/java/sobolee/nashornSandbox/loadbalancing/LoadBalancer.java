@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class LoadBalancer implements Observer{
     private final JvmManager jvmManager;
-    private final int numberOfInstances;
+    private int numberOfInstances;
     private Queue<Thread> threadQueue = new LinkedList<Thread>();
     private final Lock LOCK = new ReentrantLock();
 
@@ -48,6 +48,10 @@ public class LoadBalancer implements Observer{
         jvmManager.remove(evaluationUnit);
         jvmManager.start(this);
         notifyFreeJvm();
+    }
+
+    public void setNumberOfInstances(int numberOfInstances) {
+        this.numberOfInstances = numberOfInstances;
     }
 
     @Override

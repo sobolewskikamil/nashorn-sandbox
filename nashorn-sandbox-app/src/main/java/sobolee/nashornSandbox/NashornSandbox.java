@@ -80,6 +80,11 @@ public class NashornSandbox implements Sandbox {
         evaluator.setCpuLimit(cpuLimit);
     }
 
+    @Override
+    public void setMaxNumberOfInstances(int number){
+        evaluator.setMaxNumberOfInstances(number);
+    }
+
     public static class NashornSandboxBuilder implements SandboxBuilder {
         private final NashornSandbox sandbox = new NashornSandbox();
 
@@ -116,6 +121,12 @@ public class NashornSandbox implements Sandbox {
         @Override
         public SandboxBuilder withTimeMeasure() {
             sandbox.evaluator = new MeasuredNashornEvaluator(sandbox.evaluator);
+            return this;
+        }
+
+        @Override
+        public SandboxBuilder withMaxNumberOfInstances(int number) {
+            sandbox.setMaxNumberOfInstances(number);
             return this;
         }
 

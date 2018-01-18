@@ -13,4 +13,6 @@ public interface NashornEvaluator {
     void applyFilter(SandboxClassFilter filter);
 
     void setCpuLimit(int limit);
+
+    void setMaxNumberOfInstances(int number);
 }
