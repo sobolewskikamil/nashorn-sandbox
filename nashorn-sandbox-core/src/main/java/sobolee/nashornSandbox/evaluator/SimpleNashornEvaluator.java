@@ -36,7 +36,9 @@ public class SimpleNashornEvaluator implements NashornEvaluator {
             evaluationUnit.setEvaluating(false);
             return result;
         } catch (RemoteException e) {
+            evaluationUnit.setEvaluating(false);
             if(e.getCause().getClass() == OutOfMemoryError.class){
+                loadBalancer.notify();
                 loadBalancer.removeDeadUnit(evaluationUnit);
             }
             throw new RuntimeException(e);
@@ -52,7 +54,9 @@ public class SimpleNashornEvaluator implements NashornEvaluator {
             evaluationUnit.setEvaluating(false);
             return result;
         } catch (RemoteException e) {
+            evaluationUnit.setEvaluating(false);
             if(e.getCause().getClass() == OutOfMemoryError.class){
+                loadBalancer.notify();
                 loadBalancer.removeDeadUnit(evaluationUnit);
             }
             throw new RuntimeException(e);

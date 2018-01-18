@@ -46,6 +46,8 @@ public class LoadBalancer implements Observer{
 
     public void removeDeadUnit(EvaluationUnit evaluationUnit){
         jvmManager.remove(evaluationUnit);
+        jvmManager.start(this);
+        notifyFreeJvm();
     }
 
     @Override
@@ -69,11 +71,14 @@ public class LoadBalancer implements Observer{
                     }
                 }
             }
-            try {
-                threadQueue.add(Thread.currentThread());
-                Thread.currentThread().wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            Thread thread = Thread.currentThread();
+            synchronized (thread) {
+                try {
+                    threadQueue.add(thread);
+                    thread.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
