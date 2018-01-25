@@ -78,7 +78,7 @@ public class LoadBalancer implements Observer{
             synchronized (LOCK) {
                 try {
                     threadQueue.add(Thread.currentThread());
-                    LOCK.wait();
+                    Thread.currentThread().wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
