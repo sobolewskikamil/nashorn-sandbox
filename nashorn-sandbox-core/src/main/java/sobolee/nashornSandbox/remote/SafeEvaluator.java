@@ -56,22 +56,10 @@ public class SafeEvaluator implements Runnable, Thread.UncaughtExceptionHandler{
         result.add(e);
     }
 
-    /**
-     * Uncaught exception handler is set to catch any exceptions that are not thrown by specific code,
-     * but by the JVM e.g. OutOfMemoryError
-     *
-     * @param t Thread where the exception was thrown
-     * @param e Thrown exception
-     */
-
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         result.add(e);
     }
-
-    /*
-     All the methods below are executed on external, safe-to-kill thread
-     */
 
     @Override
     public void run() {

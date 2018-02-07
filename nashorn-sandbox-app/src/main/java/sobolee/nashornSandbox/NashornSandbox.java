@@ -20,16 +20,6 @@ public class NashornSandbox implements Sandbox {
 
     private SandboxClassFilter sandboxClassFilter = new SandboxClassFilter();
 
-    private NashornSandbox() {
-    }
-
-    /**
-     * Safely evaluates script. Result of the last line in the script will be returned as a result.
-     *
-     * @param script Script to evaluate.
-     * @param args   Actual argument objects with referring identifiers.
-     * @return Result of evaluation of the last line in the script.
-     */
     @Override
     public CompletableFuture<Object> evaluate(String script, Map<String, Object> args) {
         requireNonNull(script, "script cannot be null");
@@ -81,51 +71,51 @@ public class NashornSandbox implements Sandbox {
     }
 
     @Override
-    public void setMaxNumberOfInstances(int number){
+    public void setMaxNumberOfInstances(int number) {
         evaluator.setMaxNumberOfInstances(number);
     }
 
-    public static class NashornSandboxBuilder implements SandboxBuilder {
+    public static class NashornSandboxBuildingFacade implements SandboxBuildingFacade {
         private final NashornSandbox sandbox = new NashornSandbox();
 
         @Override
-        public SandboxBuilder withMemoryLimit(int memoryLimit) {
+        public SandboxBuildingFacade withMemoryLimit(int memoryLimit) {
             sandbox.setMemoryLimit(memoryLimit);
             return this;
         }
 
         @Override
-        public SandboxBuilder withInactiveTimeout(int seconds) {
+        public SandboxBuildingFacade withInactiveTimeout(int seconds) {
             sandbox.setInactiveTimeout(seconds);
             return this;
         }
 
         @Override
-        public SandboxBuilder withCpuLimit(int cpuLimit) {
+        public SandboxBuildingFacade withCpuLimit(int cpuLimit) {
             sandbox.setCpuLimit(cpuLimit);
             return this;
         }
 
         @Override
-        public SandboxBuilder withAllowedClasses(List<Class<?>> classes) {
+        public SandboxBuildingFacade withAllowedClasses(List<Class<?>> classes) {
             sandbox.allowClasses(classes);
             return this;
         }
 
         @Override
-        public SandboxBuilder withDisallowedClasses(List<Class<?>> classes) {
+        public SandboxBuildingFacade withDisallowedClasses(List<Class<?>> classes) {
             sandbox.disallowClasses(classes);
             return this;
         }
 
         @Override
-        public SandboxBuilder withTimeMeasure() {
+        public SandboxBuildingFacade withTimeMeasure() {
             sandbox.evaluator = new MeasuredNashornEvaluator(sandbox.evaluator);
             return this;
         }
 
         @Override
-        public SandboxBuilder withMaxNumberOfInstances(int number) {
+        public SandboxBuildingFacade withMaxNumberOfInstances(int number) {
             sandbox.setMaxNumberOfInstances(number);
             return this;
         }

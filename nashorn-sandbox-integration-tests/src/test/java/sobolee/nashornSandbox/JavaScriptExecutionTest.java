@@ -17,7 +17,7 @@ class JavaScriptExecutionTest {
 
     @BeforeAll
     static void setUpEnvironment() {
-        sandbox = new NashornSandbox.NashornSandboxBuilder()
+        sandbox = new NashornSandbox.NashornSandboxBuildingFacade()
                 .withInactiveTimeout(1)
                 .withTimeMeasure()
                 .build();
